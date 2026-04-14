@@ -65,14 +65,21 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="mt-8 flex justify-center">
+          <div className="mt-8 flex flex-col items-center gap-4">
             <Button
               onClick={() => signIn("google")}
-              className="h-12 rounded-full bg-slate-950 px-6 text-base text-white hover:bg-slate-800"
+              className="h-12 w-full max-w-xs rounded-full bg-slate-950 px-6 text-base text-white hover:bg-slate-800"
             >
               Continue with Google
               <ArrowRight className="size-4" />
             </Button>
+            
+            <button
+              onClick={() => signIn("credentials", { email: "dev@example.com", callbackUrl: "/search" })}
+              className="text-sm font-medium text-slate-500 hover:text-blue-600 hover:underline"
+            >
+              Developer Access (Bypass)
+            </button>
           </div>
         </div>
       </div>

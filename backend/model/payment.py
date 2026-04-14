@@ -18,7 +18,7 @@ class PaymentStatus(str, Enum):
 
 
 class Payment(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
     booking_id: int = Field(index=True)
     user_email: str = Field(index=True)
     amount: int  # amount in paise (e.g. 50000 = ₹500)

@@ -1,11 +1,11 @@
 
 from datetime import date, time
-
-from sqlmodel import ARRAY, Column, Field, Integer, SQLModel
+from typing import Optional
+from sqlmodel import JSON, Column, Field, SQLModel
 
 
 class Journey(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
     train_number: int 
     train_name: str
     from_station: str
@@ -16,11 +16,11 @@ class Journey(SQLModel, table=True):
     arrival_date: date
     seats: list[int] = Field(
         default_factory= lambda : [0,0,0],
-        sa_column=Column(ARRAY(Integer))
+        sa_column=Column(JSON)
     )
     fare: list[int] = Field(
         default_factory= lambda : [0,0,0],
-        sa_column=Column(ARRAY(Integer))
+        sa_column=Column(JSON)
     )
     takkal: bool
     closing_time: time

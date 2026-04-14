@@ -20,7 +20,7 @@ class Status(str,Enum):
     EXPIRED = 'expired'                   # payment window lapsed
 
 class Booking(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
     user_email: str
     journey_id: int
     seat_class: SeatClass
