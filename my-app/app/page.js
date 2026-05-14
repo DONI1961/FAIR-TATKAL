@@ -3,16 +3,16 @@
 import { Button } from "@/components/ui/button"
 import { Chip } from "@heroui/react"
 import { ArrowRight, CircleCheck, Rocket, Ticket } from "@gravity-ui/icons"
-import { signIn } from "next-auth/react"
-import { useSession } from "next-auth/react"
-import { redirect } from "next/navigation"
+import { signIn, useSession } from "@/components/auth-provider"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 
 export default function Page() {
   const { data: session } = useSession()
-
-  if (session) {
-    redirect("/search")
-  }
+  const router = useRouter()
+  useEffect(() => {
+    if (session) router.replace("/search")
+  }, [session])
 
   return (
     <div className="app-shell flex min-h-[calc(100vh-5rem)] items-center py-8">
@@ -73,13 +73,6 @@ export default function Page() {
               Continue with Google
               <ArrowRight className="size-4" />
             </Button>
-            
-            <button
-              onClick={() => signIn("credentials", { email: "dev@example.com", callbackUrl: "/search" })}
-              className="text-sm font-medium text-slate-500 hover:text-blue-600 hover:underline"
-            >
-              Developer Access (Bypass)
-            </button>
           </div>
         </div>
       </div>

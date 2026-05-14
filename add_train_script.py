@@ -1,7 +1,7 @@
 import requests
 from datetime import date, time
 
-url = "http://localhost:8000/add_train"
+url = "http://localhost:5001/add_train"
 payload = {
     "train_number": 12601,
     "train_name": "Chennai Express",

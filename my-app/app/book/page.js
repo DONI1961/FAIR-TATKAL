@@ -1,8 +1,8 @@
 'use client'
-import React, { use, useEffect } from 'react'
+import React, { use, useEffect, Suspense } from 'react'
 
 import { useSearchParams } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/components/auth-provider'
 import { useState } from 'react'
 import LotteryForm from '@/components/lotteryform'
 import NotFound from '@/components/notfound'
@@ -10,11 +10,8 @@ import Loading from '@/components/loading'
 import { useRouter } from 'next/navigation'
 import WindowOpening from '@/components/opening'
 import WindowClosed from '@/components/closed'
-import { preconnect } from 'react-dom'
-import { da } from 'date-fns/locale'
 
-
-const page = () => {
+function BookPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -32,7 +29,6 @@ const page = () => {
   const [seconds, setSeconds] = useState(null)
   const [res, setRes] = useState(null)
 
-  // Stable fetch function
   const fetchData = async () => {
     if (!journey_id || authStatus !== 'authenticated') return
 
@@ -43,7 +39,6 @@ const page = () => {
         to_station: to_station || ''
       })
 
-      // Fetch Train Details
       const trainUrl = process.env.NEXT_PUBLIC_BACKEND_URL + `/one_train?${query.toString()}`
       const trainRes = await fetch(trainUrl, {
         headers: {
@@ -61,7 +56,6 @@ const page = () => {
         setHasTrain(false)
       }
 
-      // Fetch Lottery Timing
       const timeUrl = process.env.NEXT_PUBLIC_BACKEND_URL + `/get_time?${new URLSearchParams({ journey_id }).toString()}`
       const timeRes = await fetch(timeUrl, {
         headers: {
@@ -94,7 +88,6 @@ const page = () => {
   }, [authStatus, journey_id])
 
   if (loading) return <div className="p-3"><Loading /></div>
-
   if (!hasTrain) return <div className="p-3"><NotFound /></div>
 
   return (
@@ -112,4 +105,10 @@ const page = () => {
   )
 }
 
-export default page
+export default function BookPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <BookPageInner />
+    </Suspense>
+  )
+}

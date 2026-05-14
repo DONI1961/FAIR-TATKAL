@@ -1,76 +1,45 @@
-# my-app folder
-### `.env.local`
+# Smart Rail — Lottery-Based Railway Booking System
 
-```env
-# Backend API URL
-NEXT_PUBLIC_BACKEND_URL=
+Smart Rail is a modern railway booking application designed to solve the "Tatkal" booking problem by replacing the first-come-first-served race with a fair, weighted lottery-based selection process.
 
-# Google OAuth Credentials
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
+## 🚀 Getting Started
 
-# NextAuth Configuration
-NEXTAUTH_SECRET=
-NEXTAUTH_URL=
+### 1. Prerequisites
+- Node.js (v18+)
+- Python (3.10+)
+- SQLite3
 
-# Frontend URL
-FRONTEND_URL=
+### 2. Backend Setup (FastAPI)
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+pip install -r requirements.txt
+python server.py
 ```
+*Note: The backend runs on `http://localhost:8000`.*
+
+### 3. Frontend Setup (Next.js)
+```bash
+cd my-app
+npm install
+npm run dev
+```
+*Note: The frontend runs on `http://localhost:3000`.*
+
+## 🛠️ Key Features
+- **Fair Lottery Algorithm**: Uses weighted priority scoring based on previous booking failures.
+- **Bot Protection**: Aadhaar verification and timing analysis for submissions.
+- **Admin Dashboard**: Comprehensive tools to add trains, manage schedules, and publish results.
+- **Payment Integration**: Seamless checkout via Razorpay.
+
+## 👤 Role-Based Access
+- **User**: Search trains, enter lotteries, track status, and view tickets.
+- **Admin**: Configure routes, set quotas, trigger lottery selection, and audit passengers.
+  - *To grant admin access, add the user email to `ADMIN_EMAILS` in `backend/server.py`.*
+
+## 📄 Project Documentation
+The complete application flow, including user and admin workflows, is documented in `report.html`.
 
 ---
-
-### Description of Variables
-
-* **NEXT_PUBLIC_BACKEND_URL**
-  URL of your backend API (accessible from the frontend)
-
-* **GOOGLE_CLIENT_ID & GOOGLE_CLIENT_SECRET**
-  Credentials from Google Cloud Console for OAuth authentication
-
-* **NEXTAUTH_SECRET**
-  Secret key used by NextAuth for encryption (generate a random string)
-
-* **NEXTAUTH_URL**
-  Base URL of your application (e.g., `http://localhost:3000`)
-
-* **FRONTEND_URL**
-  URL where your frontend is hosted
-
-
-### Example
-
-```env
-NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-NEXTAUTH_SECRET=some-random-secret
-NEXTAUTH_URL=http://localhost:3000
-FRONTEND_URL=http://localhost:3000
-```
-
-# backend folder
-
-###  Environment Variables
-
-Create a `.env` file in the root directory and add the following:
-
-```env
-DATABASE_URL=
-FRONTEND_URL=
-SECRET_KEY=
-ALGORITHM=HS256
-```
-
-### Description of Variables
-
-* **DATABASE_URL**  
-  Connection string used by the backend to connect to the database
-
-* **FRONTEND_URL**  
-  URL of your frontend application (used for CORS and redirects)
-
-* **SECRET_KEY**  
-  Secret key used for signing and securing tokens (keep it private) it should same as next auth secreate
-
-* **ALGORITHM**  
-  Algorithm used for token signing (default: `HS256`)
+© 2026 Smart Rail Project

@@ -3,12 +3,22 @@ import React, { useEffect, useState } from "react";
 import Loading from "@/components/loading";
 import NotFound from "@/components/notfound";
 import TrainCard from "@/components/traincard";
-import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useSession } from "@/components/auth-provider";
 
 export default function resultPage(){
     const [trains, setTrains] = useState([])
     const [loading, setLoading] = useState(true)
-    const { data : session } = useSession()
+    const { data : session, status } = useSession()
+    const router = useRouter()
+
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            router.push("/");
+        } else if (status === "authenticated" && session?.user?.role !== undefined && session?.user?.role !== "admin") {
+            router.push("/");
+        }
+    }, [session, status, router]);
 
     const handlePublish = async (key)=>{
         const query = new URLSearchParams({

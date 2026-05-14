@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Chip } from "@heroui/react";
 import { Ticket } from "@gravity-ui/icons";
 import TicketCard from "@/components/ticket";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/components/auth-provider";
 import Loading from "@/components/loading";
 import NotFound from "@/components/notfound";
 

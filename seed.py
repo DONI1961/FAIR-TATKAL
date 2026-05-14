@@ -10,7 +10,11 @@ from model.journey import Journey
 from model.user import User
 from model.publish import Publish
 
-DATABASE_URL = "sqlite:///backend/tatkal.db"
+from dotenv import load_dotenv
+load_dotenv('backend/.env')
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///backend/tatkal.db")
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 engine = create_engine(DATABASE_URL)
 
 # Real IRCTC train details catalog
@@ -37,17 +41,21 @@ def parse_time(time_str):
     h, m = map(int, time_str.split(':'))
     return time(h, m)
 
+from sqlmodel import delete
+from model.booking import Booking
+
 def seed():
     from sqlmodel import SQLModel
     SQLModel.metadata.create_all(engine)
     
     with Session(engine) as session:
-        # Clear existing trains so that we rebuild the database cleanly
-        for j in session.exec(select(Journey)).all():
-            session.delete(j)
-        for p in session.exec(select(Publish)).all():
-            session.delete(p)
+        print("Cleaning up old database records...")
+        # Efficient bulk deletion
+        session.exec(delete(Publish))  # type: ignore
+        session.exec(delete(Booking))  # type: ignore
+        session.exec(delete(Journey))  # type: ignore
         session.commit()
+        print("Cleanup complete. Starting fresh seed...")
 
         today = date.today()
         # Seed across the next 30 days
@@ -55,6 +63,7 @@ def seed():
         
         for day_offset in range(days_to_seed):
             target_date = today + timedelta(days=day_offset)
+            print(f"Seeding trains for {target_date}...")
             
             for t_data in TRAIN_CATALOG:
                 dep_time = parse_time(t_data["dep"])
@@ -93,19 +102,24 @@ def seed():
                     published=0
                 )
                 session.add(publish)
-        
-        session.commit()
-        
-        # Ensure dev user exists
-        dev_user = session.exec(select(User).where(User.email == "dev@example.com")).first()
-        if not dev_user:
-            dev_user = User(
-                name="Dev User",
-                email="dev@example.com"
-            )
-            session.add(dev_user)
-            session.commit()
             
+            session.commit() # Commit after each day
+        
+        # Ensure dev user exists with 'admin' role
+        admin_email = os.getenv("ADMIN_EMAIL", "momson1961@gmail.com")
+        admin_user = session.exec(select(User).where(User.email == admin_email)).first()
+        if not admin_user:
+            admin_user = User(
+                name="DONI PRO",
+                email=admin_email,
+                role="admin"
+            )
+            session.add(admin_user)
+        else:
+            admin_user.role = "admin"
+            session.add(admin_user)
+            
+        session.commit()
         print(f"Successfully seeded {len(TRAIN_CATALOG) * days_to_seed} real IRCTC train schedules across {days_to_seed} days!")
 
 if __name__ == "__main__":

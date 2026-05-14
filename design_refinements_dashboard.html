@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Rail - Design Refinements</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .glass-card { 
+            background: white; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); 
+            border: 1px solid #f1f5f9;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 text-gray-800">
+    <div class="max-w-6xl mx-auto space-y-8">
+        
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center pb-6 border-b border-gray-200 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-800 tracking-tight"><i class="fa-solid fa-train-subway text-indigo-600 mr-3"></i>Smart Rail Dashboard</h1>
+                <p class="text-slate-500 mt-1 ml-10">User Design Refinements Showcase</p>
+            </div>
+            <div class="flex items-center space-x-3 bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100">
+                <div class="w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 font-bold shadow-inner">JD</div>
+                <span class="font-medium text-slate-700">John Doe</span>
+                <i class="fa-solid fa-chevron-down text-slate-400 text-sm ml-2"></i>
+            </div>
+        </header>
+
+        <!-- Refinement 3: Simplified Result Communication -->
+        <section class="glass-card overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 sm:p-8 border-l-4 border-indigo-500">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 mt-1 bg-white p-2 rounded-full shadow-sm">
+                        <i class="fa-solid fa-rotate-right text-indigo-500 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-full">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-xl font-bold text-indigo-900 tracking-tight">Draw Result: New Delhi (NDLS) to Mumbai (BCT)</h3>
+                            <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded border border-indigo-200">Refinement 3</span>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl p-5 mt-4 shadow-sm border border-indigo-100 relative overflow-hidden">
+                            <!-- Decorative background element -->
+                            <div class="absolute -right-10 -top-10 text-indigo-50 opacity-50">
+                                <i class="fa-solid fa-ticket text-9xl"></i>
+                            </div>
+                            
+                            <p class="text-slate-700 text-lg relative z-10">
+                                You were not selected this time. Your score has increased to <strong class="text-indigo-700 text-2xl mx-1">45</strong>. 
+                                <br class="hidden sm:block">Your improved odds for the next draw are <strong class="text-emerald-600 text-2xl mx-1">42%</strong>.
+                            </p>
+                            
+                            <div class="mt-6 w-full bg-slate-100 rounded-full h-3 relative z-10">
+                                <div class="bg-gradient-to-r from-indigo-400 to-indigo-600 h-3 rounded-full relative" style="width: 45%">
+                                    <div class="absolute right-0 top-0 bottom-0 w-4 bg-white opacity-30 rounded-r-full animate-pulse"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between text-xs text-slate-500 mt-2 relative z-10 font-medium">
+                                <span>Score: 0</span>
+                                <span>Current: 45</span>
+                                <span>Guaranteed Ticket (100)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Refinement 1: Odds Visualisation -->
+            <section class="glass-card p-6 sm:p-8 flex flex-col h-full relative">
+                <div class="absolute top-6 right-6">
+                    <span class="bg-emerald-50 text-emerald-700 text-xs font-semibold px-2.5 py-0.5 rounded border border-emerald-200">Refinement 1</span>
+                </div>
+                <h2 class="text-xl font-bold text-slate-800 mb-2 flex items-center">
+                    <div class="w-8 h-8 rounded bg-emerald-100 flex items-center justify-center mr-3 text-emerald-600">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    Odds Visualisation
+                </h2>
+                <p class="text-sm text-slate-500 mb-6 font-medium">Win probability vs. priority score for a typical 100-entry draw (28 seats).</p>
+                
+                <div class="relative flex-grow min-h-[280px] w-full bg-slate-50 rounded-xl p-4 border border-slate-100">
+                    <canvas id="oddsChart"></canvas>
+                </div>
+                
+                <div class="mt-4 flex items-center justify-center space-x-6 text-xs text-slate-500">
+                    <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-indigo-500 mr-2"></span> Your Current Position</div>
+                    <div class="flex items-center"><span class="w-3 h-3 rounded-full border-2 border-slate-300 mr-2"></span> Base Probability</div>
+                </div>
+            </section>
+
+            <!-- Refinement 2: Public Draw Log -->
+            <section class="glass-card p-6 sm:p-8 flex flex-col h-full relative">
+                <div class="absolute top-6 right-6">
+                    <span class="bg-purple-50 text-purple-700 text-xs font-semibold px-2.5 py-0.5 rounded border border-purple-200">Refinement 2</span>
+                </div>
+                <h2 class="text-xl font-bold text-slate-800 mb-2 flex items-center">
+                    <div class="w-8 h-8 rounded bg-purple-100 flex items-center justify-center mr-3 text-purple-600">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    Public Draw Log
+                </h2>
+                <p class="text-sm text-slate-500 mb-6 font-medium">Cryptographically verifiable history for your searched routes.</p>
+                
+                <div class="overflow-hidden flex-grow border border-slate-200 rounded-xl bg-white shadow-sm">
+                    <table class="min-w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-50 text-slate-700 border-b border-slate-200">
+                            <tr>
+                                <th class="px-5 py-3 font-semibold text-xs uppercase tracking-wider">Draw Time</th>
+                                <th class="px-5 py-3 font-semibold text-xs uppercase tracking-wider text-center">Entries</th>
+                                <th class="px-5 py-3 font-semibold text-xs uppercase tracking-wider">Seed (Hash)</th>
+                                <th class="px-5 py-3 font-semibold text-xs uppercase tracking-wider text-center">Result</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-5 py-4 whitespace-nowrap"><div class="font-medium text-slate-800">Today</div><div class="text-xs text-slate-400">10:00 AM</div></td>
+                                <td class="px-5 py-4 text-center font-medium">102</td>
+                                <td class="px-5 py-4">
+                                    <div class="flex items-center">
+                                        <span class="font-mono text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">0x7f8a9b...</span>
+                                        <i class="fa-regular fa-copy ml-2 text-slate-400 hover:text-indigo-500 cursor-pointer"></i>
+                                    </div>
+                                </td>
+                                <td class="px-5 py-4 text-center"><span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-semibold">28 Winners</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-5 py-4 whitespace-nowrap"><div class="font-medium text-slate-800">Yesterday</div><div class="text-xs text-slate-400">10:00 AM</div></td>
+                                <td class="px-5 py-4 text-center font-medium">98</td>
+                                <td class="px-5 py-4">
+                                    <div class="flex items-center">
+                                        <span class="font-mono text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">0x3a4b5c...</span>
+                                        <i class="fa-regular fa-copy ml-2 text-slate-400 hover:text-indigo-500 cursor-pointer"></i>
+                                    </div>
+                                </td>
+                                <td class="px-5 py-4 text-center"><span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-semibold">28 Winners</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-5 py-4 whitespace-nowrap"><div class="font-medium text-slate-800">May 1, 2026</div><div class="text-xs text-slate-400">10:00 AM</div></td>
+                                <td class="px-5 py-4 text-center font-medium">115</td>
+                                <td class="px-5 py-4">
+                                    <div class="flex items-center">
+                                        <span class="font-mono text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">0x1b2c3d...</span>
+                                        <i class="fa-regular fa-copy ml-2 text-slate-400 hover:text-indigo-500 cursor-pointer"></i>
+                                    </div>
+                                </td>
+                                <td class="px-5 py-4 text-center"><span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-semibold">28 Winners</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-5 py-4 whitespace-nowrap"><div class="font-medium text-slate-800">Apr 30, 2026</div><div class="text-xs text-slate-400">10:00 AM</div></td>
+                                <td class="px-5 py-4 text-center font-medium">105</td>
+                                <td class="px-5 py-4">
+                                    <div class="flex items-center">
+                                        <span class="font-mono text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">0x9f8e7d...</span>
+                                        <i class="fa-regular fa-copy ml-2 text-slate-400 hover:text-indigo-500 cursor-pointer"></i>
+                                    </div>
+                                </td>
+                                <td class="px-5 py-4 text-center"><span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-semibold">28 Winners</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('oddsChart').getContext('2d');
+        
+        // Simulating probability curve
+        const scores = [0, 10, 20, 30, 40, 45, 50, 60, 70, 80, 90, 100];
+        const probabilities = [28, 31, 35, 40, 48, 54, 62, 75, 86, 94, 98, 100];
+        
+        // Colors
+        const gradientBlue = ctx.createLinearGradient(0, 0, 0, 300);
+        gradientBlue.addColorStop(0, 'rgba(99, 102, 241, 0.4)'); // indigo-500
+        gradientBlue.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: scores,
+                datasets: [{
+                    label: 'Win Probability',
+                    data: probabilities,
+                    borderColor: '#6366f1', // indigo-500
+                    backgroundColor: gradientBlue,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: function(context) {
+                        var index = context.dataIndex;
+                        return index === 5 ? '#f59e0b' : '#ffffff'; // highlight point at score 45
+                    },
+                    pointBorderColor: function(context) {
+                        var index = context.dataIndex;
+                        return index === 5 ? '#f59e0b' : '#6366f1';
+                    },
+                    pointBorderWidth: 2,
+                    pointRadius: function(context) {
+                        var index = context.dataIndex;
+                        return index === 5 ? 6 : 3;
+                    },
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleFont: { family: 'Inter', size: 13 },
+                        bodyFont: { family: 'Inter', size: 14, weight: 'bold' },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                return 'Priority Score: ' + tooltipItems[0].label;
+                            },
+                            label: function(context) {
+                                let label = context.parsed.y + '% Probability';
+                                if (context.dataIndex === 5) {
+                                    label += ' (You are here)';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: '#f1f5f9',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: { family: 'Inter' },
+                            color: '#64748b'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Priority Score',
+                            font: { family: 'Inter', weight: '500' },
+                            color: '#475569'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: '#f1f5f9',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: { family: 'Inter' },
+                            color: '#64748b',
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Probability',
+                            font: { family: 'Inter', weight: '500' },
+                            color: '#475569'
+                        },
+                        min: 0,
+                        max: 100
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+            }
+        });
+    </script>
+</body>
+</html>

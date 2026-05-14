@@ -2,7 +2,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import { SessionProvider } from "next-auth/react"
+import { AuthProvider } from "../components/auth-provider"
 import Navbar from "../components/nav";
 
 const geistSans = Geist({
@@ -21,8 +21,8 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-screen overflow-x-hidden">
-        <SessionProvider>
+      <body className="min-h-screen overflow-x-hidden" suppressHydrationWarning>
+        <AuthProvider>
           <div className="relative flex min-h-screen flex-col">
             <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-96 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.14),transparent_60%)]" />
             <Navbar />
@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
               {children}
             </main>
           </div>
-        </SessionProvider>
+        </AuthProvider>
       </body>
     </html>
   );

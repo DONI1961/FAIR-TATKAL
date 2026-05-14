@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Rail Report</title>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+    <style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px;
+    background: #fff;
+}
+h1, h2, h3 {
+    color: #1a202c;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 8px;
+    margin-top: 32px;
+}
+h1 { font-size: 2.5em; text-align: center; border-bottom: none; }
+h2 { font-size: 1.8em; margin-top: 48px; }
+hr { border: 0; border-top: 1px solid #e2e8f0; margin: 40px 0; }
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin: 20px 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+code {
+    background-color: #f7fafc;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.9em;
+}
+pre {
+    background-color: #f7fafc;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    border: 1px solid #e2e8f0;
+}
+blockquote {
+    border-left: 4px solid #4299e1;
+    padding-left: 16px;
+    color: #4a5568;
+    font-style: italic;
+    margin: 20px 0;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+th, td {
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+th { background-color: #f7fafc; }
+.mermaid {
+    text-align: center;
+    margin: 20px 0;
+}
+@media print {
+    body { padding: 0; }
+    h1, h2, h3 { page-break-after: avoid; }
+    img { page-break-inside: avoid; }
+    pre { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+    <h1>Smart Rail — Lottery-Based Railway Booking System</h1>
+<h2>Complete Application Flow Report</h2>
+<hr />
+<h1>Section A: User Flow</h1>
+<p>The user flow covers the complete journey from authentication to ticket booking through the lottery-based system.</p>
+<hr />
+<h2>Step 1: Landing Page (Sign In)</h2>
+<p>When an unauthenticated user visits the application, they see the Smart Rail landing page with a <strong>&quot;Continue with Google&quot;</strong> button.</p>
+<p><strong>Key UI Elements:</strong></p>
+<ul>
+<li>Hero: &quot;Book smarter journeys with a cleaner, faster rail experience.&quot;</li>
+<li>Feature badges: Live search flow, Lottery status tracking, Simple ticket management</li>
+<li>Google OAuth sign-in card</li>
+</ul>
+<p><img src="report_assets/landing_page_full_1777484528157.png" alt="Landing Page — Sign In Screen" /></p>
+<hr />
+<h2>Step 2: Google OAuth Authentication</h2>
+<p>Clicking &quot;Continue with Google&quot; redirects to Google's OAuth consent screen via Supabase.</p>
+<p><strong>Key UI Elements:</strong></p>
+<ul>
+<li>Google account picker with available accounts</li>
+<li>Redirect via Supabase OAuth (<code>tqsiadlcbtpyrwjydgfs.supabase.co</code>)</li>
+</ul>
+<p><img src="report_assets/click_feedback_1777315103846.png" alt="Google OAuth — Account Selection" /></p>
+<hr />
+<h2>Step 3: Train Search Page</h2>
+<p>After login, the user lands on the <strong>Search</strong> page. The navbar shows the authenticated user's profile and role.</p>
+<p><strong>Key UI Elements:</strong></p>
+<ul>
+<li><strong>From</strong> and <strong>To</strong> station input fields</li>
+<li><strong>Date</strong> picker (auto-filled with today's date)</li>
+<li><strong>&quot;Search Trains →&quot;</strong> button</li>
+<li>Navbar: Search, My Tickets, profile avatar</li>
+<li>Admin users see additional: Add Train, Publish Results, Passengers</li>
+</ul>
+<p><img src="report_assets/landing_page_1777482265032.png" alt="Search Page — Find Your Train" /></p>
+<hr />
+<h2>Step 4: Train Results — List of Available Trains</h2>
+<p>After searching (e.g., Mumbai Central → New Delhi), matching trains are displayed with full details.</p>
+<p><strong>Key UI Elements:</strong></p>
+<ul>
+<li><strong>Train card</strong>: Name, Number, TATKAL badge</li>
+<li><strong>Schedule</strong>: Departure/Arrival times, Duration</li>
+<li><strong>Fare classes</strong>: Economy (₹1500), Business (₹2500), First Class (₹3500)</li>
+<li><strong>Seat availability</strong> indicators (green dots)</li>
+<li><strong>&quot;Book&quot;</strong> button to enter the lottery</li>
+</ul>
+<p><img src="report_assets/search_results_page_1777484324380.png" alt="Train Results — Mumbai Rajdhani 12951" /></p>
+<hr />
+<h2>Step 5: Booking Window — Lottery Countdown</h2>
+<p>When clicking <strong>&quot;Book&quot;</strong>, the booking page shows a countdown timer if the lottery window hasn't opened yet.</p>
+<p><strong>Key UI Elements:</strong></p>
+<ul>
+<li><strong>&quot;Booking Window Opens Soon&quot;</strong> message with animated hourglass icon</li>
+<li><strong>Countdown timer</strong> — Hours : Minutes : Seconds</li>
+<li>The lottery enforces a <strong>5-minute submission window</strong> to prevent bot advantages</li>
+</ul>
+<p><img src="report_assets/click_feedback_1777319032756.png" alt="Booking Window — Lottery Countdown Timer" /></p>
+<hr />
+<h2>Step 6: Lottery Entry &amp; Payment</h2>
+<p>Once the window opens, the user:</p>
+<ol>
+<li>Selects preferred <strong>travel class</strong> (Economy / Business / First)</li>
+<li>Enters <strong>Aadhaar verification</strong> (12-digit identity check)</li>
+<li>Submits the <strong>lottery entry</strong></li>
+<li>If selected by the weighted algorithm → <strong>Razorpay payment</strong></li>
+<li>Upon payment → Ticket confirmed</li>
+</ol>
+<p><img src="report_assets/click_feedback_1777485327952.png" alt="Lottery Entry &amp; Payment Form" /></p>
+<blockquote>
+<p>[!NOTE]
+The lottery uses a <strong>weighted priority scoring algorithm</strong> that rewards users with previous failures, ensuring fairness. Submission timing is tracked to detect bots.</p>
+</blockquote>
+<hr />
+<h2>Step 7: My Tickets</h2>
+<p>Users view their bookings on the <strong>My Tickets</strong> page with booking count and status.</p>
+<p><strong>Key UI Elements:</strong></p>
+<ul>
+<li><strong>&quot;Ticket dashboard&quot;</strong> badge</li>
+<li><strong>BOOKINGS</strong> counter (top right)</li>
+<li>Ticket list with status and payment confirmation</li>
+<li>&quot;No tickets found yet&quot; message when empty</li>
+</ul>
+<p><img src="report_assets/my_tickets_page_standard_user_1777484398279.png" alt="My Tickets — Ticket Dashboard" /></p>
+<hr />
+<hr />
+<h1>Section B: Admin Flow</h1>
+<p>Admin users (identified by <code>ADMIN_EMAIL</code> in the backend) have additional management pages visible in the navbar with an <strong>ADMIN</strong> badge.</p>
+<hr />
+<h2>Step 8: Admin — Add New Train (Top Section)</h2>
+<p>Admins create new routes through the <strong>&quot;Add Train&quot;</strong> page. The form is organized into clear sections.</p>
+<p><strong>Key UI Elements:</strong></p>
+<ul>
+<li><strong>Train Identity</strong>: Train Number, Train Name</li>
+<li><strong>Route &amp; Stations</strong>: From Station, To Station</li>
+<li><strong>Schedule</strong>: Departure/Arrival dates and times, Duration</li>
+<li><strong>Tatkal Quota</strong>: Toggle for lottery booking + Opening/Closing windows</li>
+</ul>
+<p><img src="report_assets/click_feedback_1777318412049.png" alt="Admin — Add New Route (Train Identity &amp; Route)" /></p>
+<hr />
+<h2>Step 9: Admin — Add New Train (Pricing &amp; Submit)</h2>
+<p>The bottom section of the Add Train form covers class configuration and submission.</p>
+<p><strong>Key UI Elements:</strong></p>
+<ul>
+<li><strong>Class Configuration</strong>: Economy, Business, First — Available Seats &amp; Fare Per Seat (₹)</li>
+<li><strong>&quot;Publish New Train&quot;</strong> button (full-width, prominent)</li>
+<li><strong>DEV PREVIEW</strong> panel showing the JSON payload being sent</li>
+</ul>
+<p><img src="report_assets/add_train_bottom_section_1777320201226.png" alt="Admin — Class Configuration &amp; Publish Button" /></p>
+<hr />
+<h2>Step 10: Admin — Publish Lottery Results</h2>
+<p>The <strong>Publish Results</strong> page lists all trains with their schedules and a <strong>&quot;Publish&quot;</strong> button to run the lottery algorithm.</p>
+<p><strong>Key UI Elements:</strong></p>
+<ul>
+<li>List of all trains with TATKAL badge</li>
+<li>Train details: Name, Number, Schedule, Route</li>
+<li><strong>&quot;Publish&quot;</strong> button per train to trigger the lottery selection</li>
+<li>Trains shown: Mumbai Rajdhani 12951, Mumbai Rajdhani 12952, Shatabdi Express 12027</li>
+</ul>
+<p><img src="report_assets/publish_results_page_1777320078933.png" alt="Admin — Publish Results (Lottery Trigger)" /></p>
+<hr />
+<h2>Step 11: Admin — Passenger List</h2>
+<p>The <strong>Passengers</strong> page lets admins view selected passengers for any published lottery journey.</p>
+<p><strong>Key UI Elements:</strong></p>
+<ul>
+<li><strong>&quot;Passenger List&quot;</strong> header with ADMIN badge</li>
+<li><strong>Filter by Date</strong> picker</li>
+<li><strong>Select Journey</strong> dropdown for published journeys</li>
+<li>Filtered passenger list with booking status and priority scores</li>
+</ul>
+<p><img src="report_assets/passengers_page_1777320118670.png" alt="Admin — Passenger List" /></p>
+<hr />
+<hr />
+<h1>Section C: Design Thinking Process</h1>
+<p>The Fair Tatkal project was developed using the <strong>Stanford Design Thinking</strong> methodology to address the systematic exclusion of users in the current Tatkal booking system.</p>
+
+<h2>Design Thinking Infographic</h2>
+<p><img src="report_assets/fair_tatkal_design_thinking_diagram_1777482094480.png" alt="Fair Tatkal Design Thinking Process Diagram" /></p>
+
+<h2>Process Breakdown</h2>
+<ul>
+    <li><strong>Empathize:</strong> Conducted 12 structured interviews with diverse demographics (rural workers, students, urban professionals). Identified that speed is the primary mechanism of exclusion.</li>
+    <li><strong>Define:</strong> Reframed the problem from "How to make booking faster?" to "How to make booking fairer?". Developed the SCOPES framework.</li>
+    <li><strong>Ideate:</strong> Brainstormed alternative allocation mechanisms. Selected the <strong>Priority-Based Weighted Lottery</strong> for its transparency and fairness.</li>
+    <li><strong>Prototype:</strong> Built an interactive 9-screen Next.js application and a Python simulation model to test the lottery algorithm at scale (10,000 users).</li>
+    <li><strong>Test:</strong> Validated results using the Gini Coefficient. Achieved a 50% improvement in distributional fairness and a 633% increase in rural user success rates.</li>
+</ul>
+<hr />
+
+<h1>System Architecture</h1>
+<div style="font-family: Arial, sans-serif; background: #ffffff; padding: 20px; border: 1px solid #d1d5db; border-radius: 8px; max-width: 950px; margin: 0 auto; display: flex; gap: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+  <!-- Left Column -->
+  <div style="flex: 1.2; display: flex; flex-direction: column; gap: 20px;">
+    <!-- Top Left Box -->
+    <div style="border: 2px dashed #4a90e2; padding: 15px; border-radius: 8px; background: #f0f7ff;">
+      <h3 style="margin-top: 0; color: #333; text-align: center; font-size: 16px;">Client Connection</h3>
+      <div style="background: #e1f5fe; border: 1px solid #90cdf4; padding: 15px; border-radius: 8px; text-align: center;">
+         <div style="font-size: 40px; margin-bottom: 10px; display: flex; justify-content: center; gap: 10px;">💻 📱 👁️</div>
+         <p style="margin: 0; font-size: 13px; color: #2d3748;">Using Aadhaar for secure authentication | Fair Tatkal Registration with 5KB Lightweight Packet</p>
+      </div>
+    </div>
+    
+    <!-- Bottom Left Box -->
+    <div style="border: 2px dashed #4a90e2; padding: 15px; border-radius: 8px; background: #f0f7ff;">
+      <h3 style="margin-top: 0; color: #333; text-align: center; font-size: 16px;">Lottery Entry Flow</h3>
+      <div style="background: #e1f5fe; border: 1px solid #90cdf4; padding: 15px; border-radius: 8px;">
+         <h4 style="margin-top: 0; text-align: center; font-size: 14px; color: #2b6cb0;">Fair Tatkal Module (Client-Side)</h4>
+         <ul style="font-size: 13px; padding-left: 20px; color: #2d3748; margin-bottom: 5px;">
+           <li>Priority Score Calculation</li>
+           <li>Aadhaar Identity Hash (SHA-256)</li>
+           <li>Bot Detection Pre-screening</li>
+         </ul>
+      </div>
+      <div style="text-align: center; margin-top: 10px; font-size: 12px; color: #4a5568;">Plain Data to End-to-End Encrypted Submission</div>
+    </div>
+  </div>
+
+  <!-- Middle Column (Users & Encryption Flow) -->
+  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 30px; width: 150px;">
+     <div style="text-align: center;">
+        <span style="font-size: 24px;">👤</span><br><span style="font-size: 12px; font-weight: bold; color: #4a5568;">User 1</span>
+        <div style="font-size: 12px; color: #3182ce; font-weight: bold; margin-top: 5px;">➡️ 📄🔒 ➡️<br>End-End Encryption</div>
+     </div>
+     <div style="text-align: center;">
+        <span style="font-size: 24px;">👤</span><br><span style="font-size: 12px; font-weight: bold; color: #4a5568;">User 2</span>
+        <div style="font-size: 12px; color: #3182ce; font-weight: bold; margin-top: 5px;">➡️ 📄🔒 ➡️<br>End-End Encryption</div>
+     </div>
+     <div style="text-align: center;">
+        <span style="font-size: 24px;">👤</span><br><span style="font-size: 12px; font-weight: bold; color: #4a5568;">User 3</span>
+        <div style="font-size: 12px; color: #3182ce; font-weight: bold; margin-top: 5px;">➡️ 📄🔒 ➡️<br>End-End Encryption</div>
+     </div>
+  </div>
+
+  <!-- Right Column -->
+  <div style="flex: 1.5; display: flex; flex-direction: column; gap: 20px;">
+    <!-- Top Right Box -->
+    <div style="border: 2px dashed #4a90e2; border-radius: 8px; background: #f0f7ff; display: flex; overflow: hidden;">
+      <div style="flex: 1; padding: 15px;">
+          <h3 style="margin-top: 0; color: #333; text-align: center; font-size: 16px;">Public Server</h3>
+          <div style="background: #90cdf4; color: #2c5282; padding: 10px; margin-bottom: 10px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 14px;">Express API Server 🖥️</div>
+          <div style="background: #ebf8ff; border: 1px solid #63b3ed; padding: 8px; margin-bottom: 10px; text-align: center; font-size: 13px;">Application Logic (Lottery Entry)</div>
+          <div style="background: #ebf8ff; border: 1px solid #63b3ed; padding: 8px; margin-bottom: 10px; text-align: center; font-size: 13px;">Web Server</div>
+          <div style="background: #feebc8; border: 1px solid #ed8936; padding: 8px; text-align: center; font-size: 13px;">Database PostgreSQL 🐘</div>
+      </div>
+      <div style="width: 35px; background: #63b3ed; color: #1a365d; writing-mode: vertical-rl; text-orientation: mixed; text-align: center; font-weight: bold; padding: 15px 0; font-size: 14px;">
+        PUBLIC SERVER
+      </div>
+    </div>
+    
+    <!-- Bottom Right Box -->
+    <div style="border: 2px dashed #4a90e2; border-radius: 8px; background: #f0f7ff; display: flex; overflow: hidden;">
+      <div style="flex: 1; padding: 15px;">
+          <h3 style="margin-top: 0; color: #333; text-align: center; font-size: 16px;">Firewall & Core</h3>
+          <div style="background: #3182ce; color: white; padding: 10px; margin-bottom: 10px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 14px;">Python Lottery Engine 🐍</div>
+          <div style="background: #90cdf4; color: #2c5282; padding: 8px; margin-bottom: 10px; border-radius: 4px; text-align: center; font-size: 13px;">Services for Bot Defense & Execution</div>
+          <div style="background: #90cdf4; color: #2c5282; padding: 8px; border-radius: 4px; text-align: center; font-size: 13px;">ML Isolation Forest Bot Detection 🤖</div>
+      </div>
+      <div style="width: 35px; background: #2b6cb0; color: white; writing-mode: vertical-rl; text-orientation: mixed; text-align: center; font-weight: bold; padding: 15px 0; font-size: 14px;">
+        PRIVATE CORE SERV
+      </div>
+    </div>
+  </div>
+</div>
+<hr />
+<h1>Admin Workflow</h1>
+<div class="mermaid">
+flowchart TD
+    A1[&quot;Admin Login (ADMIN badge)&quot;] --&gt; B1[&quot;Add New Train&quot;]
+    B1 --&gt; C1[&quot;Configure Identity, Route, Schedule&quot;]
+    C1 --&gt; D1[&quot;Set Tatkal Quota &amp; Window&quot;]
+    D1 --&gt; E1[&quot;Set Class Pricing (Economy/Business/First)&quot;]
+    E1 --&gt; F1[&quot;Publish New Train&quot;]
+    F1 --&gt; G1[&quot;Passengers Enter Lottery&quot;]
+    G1 --&gt; H1[&quot;Booking Window Closes&quot;]
+    H1 --&gt; I1[&quot;Publish Results Page&quot;]
+    I1 --&gt; J1[&quot;Click Publish → Run Lottery Algorithm&quot;]
+    J1 --&gt; K1[&quot;View Passenger List&quot;]
+    K1 --&gt; L1[&quot;Audit Winners &amp; Priority Scores&quot;]
+</div>
+<hr />
+<h1>Technology Stack</h1>
+<p>| Layer | Technology |
+|-------|-----------|
+| <strong>Frontend</strong> | Next.js 15 (App Router) |
+| <strong>Backend</strong> | FastAPI (Python) |
+| <strong>Database</strong> | SQLite (SQLModel ORM) |
+| <strong>Authentication</strong> | Supabase + Google OAuth |
+| <strong>Payment</strong> | Razorpay Integration |
+| <strong>Anti-Bot</strong> | Aadhaar verification, Timing analysis, Priority scoring |</p>
+<h1>Performance Metrics</h1>
+<p>The following infographic compares the performance and fairness metrics of the <strong>Fair Tatkal</strong> system against the current first-come-first-served (FCFS) mechanism.</p>
+<p><img src="report_assets/fair_tatkal_results_comparison_1777483047354.png" alt="Performance Comparison Infographic" /></p>
+<hr />
+<h1>Feedback-Driven Refinements</h1>
+<p>Based on peer testing, empathy findings, and simulation results, the Fair Tatkal prototype was refined to better support low-connectivity users, elderly passengers, and first-time digital users.</p>
+
+<h2>1. Voice‑Assisted and Multi‑Language Guidance &amp; 2. Enhanced 2G‑Safe Interaction Pattern</h2>
+<p>To address low-literacy users and low-connectivity environments, the design now includes voice-guided prompts and an offline-safe request queue visualization with a minimal 4.2 KB payload display.</p>
+<img src="report_assets/voice_and_2g_refinement.png" alt="Multi-Language Voice Assist &amp; 2G-Safe Pattern" />
+
+<h2>3. Clearer Failure Handling &amp; Recovery Path</h2>
+<p>Introduced an empathetic error state for payment failures that explicitly confirms the user's priority score is protected, along with a countdown timer for the retry window.</p>
+<img src="report_assets/payment_failure_refinement.png" alt="Payment Failure Recovery" />
+<hr />
+
+<h1>Section C: Conclusion & Future Scope</h1>
+
+<p>The Smart Rail system successfully addresses the "Tatkal" booking problem by replacing the first-come-first-served race with a fair, lottery-based selection process. By utilizing weighted priority scores and Aadhaar verification, the system eliminates bot advantages and ensures that genuine travelers have a high chance of securing a ticket over time.</p>
+
+<h3>Key Achievements:</h3>
+<ul>
+    <li><strong>Fairness:</strong> Weighted algorithm rewards users who have faced previous booking failures.</li>
+    <li><strong>Security:</strong> Integrated Aadhaar verification and timing analysis to prevent automated scripts.</li>
+    <li><strong>Scalability:</strong> Built on a modern Next.js and FastAPI stack, capable of handling high traffic during booking windows.</li>
+    <li><strong>Transparency:</strong> Admin dashboard provides clear visibility into passenger lists and lottery results.</li>
+</ul>
+
+<h3>Future Roadmap:</h3>
+<ul>
+    <li>Integration with live IRCTC APIs for real-time train status.</li>
+    <li>Mobile app development for easier access on the go.</li>
+    <li>Enhanced analytics for predicting booking success rates based on historic data.</li>
+</ul>
+<hr />
+<p style="text-align: center; color: #718096; font-size: 0.9em;"><em>End of Report &mdash; Generated for Smart Rail Project Submission</em></p>
+
+</body>
+</html>

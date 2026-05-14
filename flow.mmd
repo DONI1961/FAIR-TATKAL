@@ -1,0 +1,51 @@
+graph TD
+    %% Styling
+    classDef auth fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#000
+    classDef search fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px,color:#000
+    classDef process fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000
+    classDef decision fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#000
+    classDef success fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
+    classDef failure fill:#ffcdd2,stroke:#c62828,stroke-width:2px,color:#000
+    classDef system fill:#eceff1,stroke:#607d8b,stroke-width:2px,stroke-dasharray: 5 5,color:#000
+
+    %% User Authentication
+    A[App Opened]:::auth -->|Google OAuth via Supabase| B(Profile Sync):::auth
+    B -->|Calls /add_user| C[Train Search]:::search
+    
+    %% Searching & Countdown
+    C -->|Queries FastAPI| D{Is Booking Window Open?}:::decision
+    D -- No --> E[Wait: Countdown Timer]:::search
+    E --> D
+    
+    %% Booking Submission
+    D -- Yes --> F[User Submits Lottery Entry]:::process
+    F -->|4.2 KB Packet to /lottery| G(API Validates Entry):::process
+    
+    %% Validation
+    G -->|Checks Duplicates| H{Valid Entry?}:::decision
+    H -- No --> I[Reject Entry]:::failure
+    H -- Yes --> J[Status: PENDING]:::process
+    
+    %% Draw & Status Update
+    J --> K[Window Closes & Pool Frozen]:::system
+    K -->|Admin triggers /publish_lottery| L[Weighted Draw Executes]:::system
+    L -->|Python Engine samples winners| M{Are you a Winner?}:::decision
+    
+    %% Post Draw Outcomes
+    M -- No --> N[Status: WAITLISTED]:::failure
+    N -->|Gains +1 Priority Point| O[Wait for next lottery or promotion]:::system
+    
+    M -- Yes --> P[Status: PAYMENT_PENDING]:::process
+    P -->|Initiate Razorpay| Q[Payment Gateway]:::process
+    
+    %% Payment Flow
+    Q --> R{Payment Successful?}:::decision
+    R -- No --> S[Status: PAYMENT_FAILED]:::failure
+    S -->|Retry within window| Q
+    
+    R -- Yes --> T[Webhook /payment/webhook]:::system
+    T --> U((Ticket CONFIRMED!)):::success
+    
+    %% Background Jobs
+    V((Background Scheduler<br>Runs every 60s)):::system -.- |Checks expiry| P
+    V -.- |Auto-promotes| N

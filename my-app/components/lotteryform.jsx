@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/components/auth-provider';
 import Loading from '@/components/loading'
 import LotteryDone from '@/components/done'
 import { Button } from './ui/button';

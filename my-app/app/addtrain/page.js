@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "@/components/auth-provider";
 import { format } from "date-fns";
 import { 
   Train, 
@@ -111,7 +112,17 @@ const InputField = ({ label, name, value, onChange, placeholder, icon: Icon, typ
 );
 
 export default function AddTrain() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/");
+    } else if (status === "authenticated" && session?.user?.role !== "admin") {
+      router.push("/");
+    }
+  }, [session, status, router]);
+
   const formatTime = (t) => `${t}:00`;  
   const [train, setTrain] = useState({
     train_number: "",

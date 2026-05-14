@@ -1,0 +1,22 @@
+flowchart TD
+    A["User visits Smart Rail"] --> B{"Authenticated?"}
+    B -->|No| C["Landing Page - Google OAuth"]
+    C --> D["Google Account Selection"]
+    D --> E["Supabase Auth Callback"]
+    E --> F["Redirect to Search"]
+    B -->|Yes| F["Search Page"]
+    F --> G["Enter From/To/Date"]
+    G --> H["Train Results"]
+    H --> I["Click Book"]
+    I --> J{"Window Open?"}
+    J -->|No| K["Countdown Timer"]
+    K -->|"Window Opens"| L["Lottery Entry Form"]
+    J -->|Yes| L
+    L --> M["Aadhaar Verification"]
+    M --> N["Submit Lottery Entry"]
+    N --> O{"Selected?"}
+    O -->|Yes| P["Razorpay Payment"]
+    P --> Q["Ticket Confirmed"]
+    Q --> R["My Tickets"]
+    O -->|No| S["Priority Score Increased"]
+    S --> T["Try Again Next Time"]

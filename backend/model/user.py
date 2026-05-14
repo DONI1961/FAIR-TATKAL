@@ -6,3 +6,4 @@ class User(SQLModel, table=True):
     name: str
     email: str = Field(unique=True)
     points: int = Field(default=100)
+    role: str = Field(default="user")

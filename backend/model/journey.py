@@ -1,26 +1,25 @@
 
 from datetime import date, time
 from typing import Optional
-from sqlmodel import JSON, Column, Field, SQLModel
+from sqlalchemy import Column, JSON
+from sqlmodel import Field, SQLModel
 
 
 class Journey(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     train_number: int 
     train_name: str
-    from_station: str
-    to_station: str
+    from_station: str = Field(index=True)
+    to_station: str = Field(index=True)
     departure_time: str
-    departure_date: date
+    departure_date: date = Field(index=True)
     arrival_time: str
     arrival_date: date
     seats: list[int] = Field(
-        default_factory= lambda : [0,0,0],
-        sa_column=Column(JSON)
+        sa_column=Column(JSON, default=[0, 0, 0])
     )
     fare: list[int] = Field(
-        default_factory= lambda : [0,0,0],
-        sa_column=Column(JSON)
+        sa_column=Column(JSON, default=[0, 0, 0])
     )
     takkal: bool
     closing_time: time

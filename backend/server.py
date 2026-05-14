@@ -18,6 +18,9 @@ from model.payment import Payment, PaymentStatus
 from fastapi.middleware.cors import CORSMiddleware
 from jose import jwt, JWTError
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from model.user import User
+from services.payment_service import expire_unpaid_winners
+from services.lottery_service import run_winner_selection, auto_publish_expired_lotteries
 from lib.sampling import sample_objects
 from lib.util import segregate_user
 from services.payment_service import (
@@ -55,7 +58,7 @@ ALGORITHM = str(os.getenv('ALGORITHM'))
 
 dataBase_url = os.getenv("DATABASE_URL")
 
-engine = create_engine(url=str(dataBase_url),echo=True)
+engine = create_engine(url=str(dataBase_url), echo=False, pool_pre_ping=True)
 
 def connect_create_db():
     SQLModel.metadata.create_all(engine)
@@ -68,24 +71,36 @@ def get_session():
 # ──────────────────────────────────────────────
 # Background Scheduler: Expire Unpaid Bookings
 # ──────────────────────────────────────────────
-async def payment_expiry_scheduler():
-    """Runs every 60 seconds to expire unpaid lottery winners and promote waitlisted users."""
+async def background_scheduler_loop():
+    """Runs every 60 seconds to handle administrative background tasks."""
     while True:
         try:
-            with Session(engine) as session:
-                result = expire_unpaid_winners(session)
-                if result['expired'] > 0:
-                    print(f"[Scheduler] Expired {result['expired']} bookings, promoted {result['promoted']} waitlisted users")
+            # Wrap synchronous DB operations in a thread to keep the event loop responsive
+            await asyncio.to_thread(perform_background_tasks)
         except Exception as e:
-            print(f"[Scheduler] Error: {e}")
-        await asyncio.sleep(60)  # Check every minute
+            print(f"Background scheduler error: {e}")
+            traceback.print_exc()
+        await asyncio.sleep(60)
+
+def perform_background_tasks():
+    """The actual synchronous DB logic for background processing."""
+    with Session(engine) as session:
+        # 1. Expire unpaid winners and promote waitlist
+        expiry_results = expire_unpaid_winners(session)
+        if expiry_results['expired'] > 0:
+            print(f"[{datetime.datetime.now()}] Expired {expiry_results['expired']} bookings, promoted {expiry_results['promoted']} waitlisted users.")
+            
+        # 2. Auto-publish expired lotteries
+        published_count = auto_publish_expired_lotteries(session)
+        if published_count > 0:
+            print(f"[{datetime.datetime.now()}] Automatically published {published_count} lotteries.")
 
 
 @asynccontextmanager
-async def lifespan(app:FastAPI):
+async def lifespan(app: FastAPI):
     connect_create_db()
     # Start background payment expiry task
-    task = asyncio.create_task(payment_expiry_scheduler())
+    task = asyncio.create_task(background_scheduler_loop())
     yield
     task.cancel()
 
@@ -93,6 +108,8 @@ app = FastAPI(lifespan=lifespan)
 
 origins = [
     str(os.getenv('FRONTEND_URL')),
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
 
 app.add_middleware(
@@ -126,22 +143,119 @@ async def addUser(user: model.User, session: Session = Depends(get_session)):
             return {
                 'ok': True,
                 'user_id': existing_user.id,
-                'points': existing_user.points
-            }   
+                'points': existing_user.points,
+                'role': existing_user.role
+            }
+        
+        # Assign admin role to first admin email
+        admin_email = os.getenv("ADMIN_EMAIL", "momson1961@gmail.com")
+        if user.email == admin_email:
+            user.role = "admin"
+            
         session.add(user)
         session.commit()
         session.refresh(user)
         return{
             'ok': True,
             'user_id': user.id,
-            'user_points': user.points
+            'user_points': user.points,
+            'role': user.role
         }
     except Exception as e:
         return {
             'ok': False,
             'message': str(e)
         }
+
+@app.get('/published_trains')
+async def publishedTrains(filter_date: str = None, session: Session = Depends(get_session)):
+    """Return all published journeys (for admin passenger list view)."""
+    try:
+        print(f"[published_trains] Received filter_date param: '{filter_date}'")
+        query = select(model.Publish, Journey).join(Journey, model.Publish.journey_id == Journey.id).where(model.Publish.published == True)
+        
+        parsed_date = None
+        if filter_date and filter_date.strip():
+            # Try multiple formats, including 2-digit year and common separators
+            formats = ("%Y-%m-%d", "%m/%d/%Y", "%d/%m/%Y", "%m/%d/%y", "%d/%m/%y")
+            clean_date = filter_date.strip().replace(',', '/').replace(' ', '')
+            
+            for fmt in formats:
+                try:
+                    d_obj = datetime.datetime.strptime(clean_date, fmt).date()
+                    query = query.where(Journey.departure_date == d_obj)
+                    parsed_date = str(d_obj)
+                    print(f"[published_trains] Filter applied for date: {d_obj}")
+                    break
+                except ValueError:
+                    continue
+            
+            if not parsed_date:
+                print(f"[published_trains] FAILED to parse date: '{filter_date}'")
+                return {'ok': True, 'trains': [], 'message': f'Could not parse date: {filter_date}.'}
+        else:
+            print("[published_trains] No date filter provided.")
+            
+        results = session.exec(query.distinct()).all()
+        trains = []
+        for p, train in results:
+            trains.append({
+                'id': train.id,
+                'train_name': train.train_name,
+                'train_number': train.train_number,
+                'from_station': train.from_station,
+                'to_station': train.to_station,
+                'departure_date': str(train.departure_date),
+                'departure_time': train.departure_time,
+                'published_at': str(p.published_at) if p.published_at else None,
+            })
+        return {'ok': True, 'trains': trains, 'applied_filter': parsed_date}
+    except Exception as e:
+        traceback.print_exc()
+        return {'ok': False, 'message': str(e)}
+
+@app.get('/passengers')
+async def getPassengers(journey_id: int, session: Session = Depends(get_session)):
+    """Return all passengers (winners) for a published journey."""
+    try:
+        publish = session.exec(
+            select(model.Publish).where(
+                model.Publish.journey_id == journey_id,
+                model.Publish.published == True
+            )
+        ).first()
+        if not publish:
+            return {'ok': False, 'message': 'Journey not published yet'}
+
+        bookings = session.exec(
+            select(model.Booking).where(
+                model.Booking.journey_id == journey_id,
+                model.Booking.status.in_(['selected', 'confirmed', 'payment_pending', 'payment_failed'])
+            )
+        ).all()
+
+        passengers = []
+        for b in bookings:
+            user = session.exec(
+                select(model.User).where(model.User.email == b.user_email)
+            ).first()
+            passengers.append({
+                'booking_id': b.id,
+                'name': user.name if user else 'Unknown',
+                'email': b.user_email,
+                'seat_class': b.seat_class,
+                'status': b.status,
+                'paid': b.paid,
+                'selected_at': str(b.selected_at) if b.selected_at else None,
+            })
+
+        return {'ok': True, 'passengers': passengers, 'total': len(passengers)}
+    except Exception as e:
+        traceback.print_exc()
+        return {'ok': False, 'message': str(e)}
+
 @app.post('/add_train')
+
 async def addTrain(train: Journey, session: Session = Depends(get_session)):
     session.add(train)
     session.commit()
@@ -158,38 +272,29 @@ async def addTrain(train: Journey, session: Session = Depends(get_session)):
     }
 
 @app.get('/get_trains')
-async def getTrains(from_station: str, to_station: str,date: date, session: Session = Depends(get_session)):
-    try: 
-        publish_records = session.exec(select(model.Publish)).all()
+async def getTrains(from_station: str, to_station: str, date: date, session: Session = Depends(get_session)):
+    try:
+        # Single JOIN query — replaces the old N+1 loop that caused timeouts
+        from sqlalchemy import func
+        statement = (
+            select(Journey, model.Publish)
+            .join(model.Publish, Journey.id == model.Publish.journey_id)
+            .where(
+                Journey.departure_date == date,
+                func.lower(Journey.from_station) == func.lower(from_station),
+                func.lower(Journey.to_station) == func.lower(to_station),
+            )
+        )
+        results = session.exec(statement).all()
         journeys = []
-        for publish in publish_records:
-            itrian = session.exec(
-                select(Journey).where(
-                    Journey.id == publish.journey_id, 
-                    Journey.departure_date == date,
-                    Journey.from_station.ilike(from_station), 
-                    Journey.to_station.ilike(to_station)
-                )
-            ).first()
-            if itrian:
-                train_dict = itrian.model_dump() if hasattr(itrian, 'model_dump') else itrian.dict()
-                train_dict['published'] = publish.published
-                journeys.append(train_dict)
-        
-        if len(journeys) == 0:
-            return {
-            'ok': True,
-            'journeys': []
-            }
-        return {
-            'ok': True,  
-            'journeys': journeys
-        }
+        for itrian, publish in results:
+            train_dict = itrian.model_dump() if hasattr(itrian, 'model_dump') else itrian.dict()
+            train_dict['published'] = publish.published
+            journeys.append(train_dict)
+
+        return {'ok': True, 'journeys': journeys}
     except Exception as e:
-        return {
-            'ok': False,
-            'message': str(e)
-        }
+        return {'ok': False, 'message': str(e)}
 
 @app.get('/one_train')
 async def getOneTrain(journey_id: int, session: Session = Depends(get_session)):
@@ -276,66 +381,18 @@ async def lottery(booking: model.Booking, session: Session = Depends(get_session
 @app.post('/publish_lottery')
 async def publishLottery(journey_id: int, session: Session = Depends(get_session)):
     try:
-        publish = session.exec(
-            select(model.Publish).where(model.Publish.journey_id == journey_id)
-        ).one()
-
-        if publish:
-            #get all the user from the booking table
-            train: Journey = session.exec(
-                select(Journey).where(Journey.id == journey_id)
-            ).one()
-            booking = session.exec(
-                select(model.Booking).where(model.Booking.journey_id == journey_id)
-            ).all()
-
-            users = []
-            for b in booking:
-                user = session.exec(
-                    select(model.User).where(model.User.email == b.user_email)
-                ).one()
-                users.append(user)
-            
-            seg_user = segregate_user(users,booking)
-
-            now = datetime.datetime.now()
-
-            for i,seat_class in enumerate(['economy','business','first']):
-                if len(seg_user[seat_class]) != 0:
-                    selected_users = sample_objects(seg_user[seat_class], train.seats[i], lambda u: u.points, replace=False)
-                    print(f'{selected_users=}')
-                    for user in selected_users:
-                        user.points -= 20
-                        #send the email
-                        for b in booking:
-                            if b.user_email == user.email:
-                                b.status = Status.SELECTED.value
-                                b.selected_at = now  # Record selection time for payment window
-                                session.add(b)
-                        session.add(user)
-                    not_selected = [u for u in seg_user[seat_class] if u not in selected_users]
-                    for user in not_selected:
-                        user.points += 50
-                        #send the email
-                        for b in booking:
-                            if b.user_email == user.email:
-                                b.status = Status.NOTSELECTED.value
-                                session.add(b)
-                        session.add(user) 
-
-            publish.published = True
-            session.add(publish)
-            session.commit()
-            session.refresh(publish)
+        publish_id = run_winner_selection(journey_id, session)
+        if publish_id:
             return {
                 'ok': True,
-                'publish_id': publish.id
+                'publish_id': publish_id
             }
         return {
             'ok': False,
-            'message': 'Publish not found'
+            'message': "Lottery already published or not found."
         }
     except Exception as e:
+        traceback.print_exc()
         return {
             'ok': False,
             'message': str(e)
@@ -365,15 +422,16 @@ async def resetTrainDev(journey_id: int, session: Session = Depends(get_session)
                 for p in payments:
                     session.delete(p)
                 session.delete(b)
-                
+            
             session.commit()
-            return {'ok': True, 'message': f'Train {journey_id} reset successfully! You can now test the lottery again.'}
+            return {'ok': True, 'message': f'Train {journey_id} reset successfully!'}
             
         return {'ok': False, 'message': 'Publish record not found'}
     except Exception as e:
         import traceback
         traceback.print_exc()
         return {'ok': False, 'message': str(e)}
+
 
 @app.get('/un_published_trains')
 async def unPublishedTrains(session: Session = Depends(get_session)):

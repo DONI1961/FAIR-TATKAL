@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import StationAutocomplete from "@/components/StationAutocomplete";
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -56,37 +57,23 @@ export default function Home() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div>
-              <label htmlFor="from_station" className="mb-2 block text-sm font-medium text-slate-700">
-                From
-              </label>
-              <input
-                type="text"
-                id="from_station"
-                name="from_station"
-                value={formData.from_station}
-                onChange={handleChange}
-                placeholder="Departure station"
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/15"
-                required
-              />
-            </div>
+            <StationAutocomplete
+              id="from_station"
+              name="from_station"
+              value={formData.from_station}
+              onChange={handleChange}
+              placeholder="e.g. Mumbai Central"
+              label="From"
+            />
 
-            <div>
-              <label htmlFor="to_station" className="mb-2 block text-sm font-medium text-slate-700">
-                To
-              </label>
-              <input
-                type="text"
-                id="to_station"
-                name="to_station"
-                value={formData.to_station}
-                onChange={handleChange}
-                placeholder="Arrival station"
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/15"
-                required
-              />
-            </div>
+            <StationAutocomplete
+              id="to_station"
+              name="to_station"
+              value={formData.to_station}
+              onChange={handleChange}
+              placeholder="e.g. New Delhi"
+              label="To"
+            />
             
             <div className="md:col-span-2">
               <label className="mb-2 block text-sm font-medium text-slate-700">

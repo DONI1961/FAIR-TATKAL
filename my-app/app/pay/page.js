@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useEffect, useState, useCallback, useRef } from 'react'
+import React, { useEffect, useState, useCallback, useRef, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/components/auth-provider'
 import Loading from '@/components/loading'
 import Script from 'next/script'
 import { Button } from '@/components/ui/button'
@@ -472,4 +472,10 @@ const PaymentPage = () => {
   )
 }
 
-export default PaymentPage
+export default function PayPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <PaymentPage />
+    </Suspense>
+  )
+}

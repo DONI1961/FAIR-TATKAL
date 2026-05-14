@@ -1,15 +1,14 @@
 'use client';
 
 import { redirect, useSearchParams } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import Loading from "@/components/loading"
 import TrainCard from "@/components/traincard";
 import NotFound from "@/components/notfound";
-import { useSession } from "next-auth/react";
-import { Truck } from "lucide-react";
+import { useSession } from "@/components/auth-provider";
 
 
-export default function SearchTrain() {
+function SearchTrainInner() {
     const { data: session, status } = useSession()
     const searchParams = useSearchParams()
     const [trainResults, setTrainResults] = useState([]);
@@ -35,14 +34,13 @@ export default function SearchTrain() {
                     date: date
                 })
                 const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/get_trains?${url.toString()}`, {
-                  headers: {
-                    'Authorization': `Bearer ${session?.accessToken}`,
-                  }
+                  headers: session?.accessToken
+                    ? { 'Authorization': `Bearer ${session.accessToken}` }
+                    : {}
                 })
                 const data = await res.json()
                 if (data.ok) {
                     setTrainResults(data.journeys)
-                    console.log(data)
                 } else {
                     setTrainResults([])
                 }
@@ -53,11 +51,12 @@ export default function SearchTrain() {
             setLoading(false)
         }
         
-        if (status === 'authenticated'){
+        // Fetch once status is resolved (authenticated or not) — /get_trains is public
+        if (status !== 'loading') {
             fetchTrains()
         }
     
-    }, [ from, status, to, date])
+    }, [from, status, to, date])
 
     const handleClick = (train) => {
         const {id}  = train
@@ -87,5 +86,13 @@ export default function SearchTrain() {
                 )}
             </div>
         </div>
+    )
+}
+
+export default function SearchTrain() {
+    return (
+        <Suspense fallback={<Loading />}>
+            <SearchTrainInner />
+        </Suspense>
     )
 }
