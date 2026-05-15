@@ -17,10 +17,13 @@ export default function MyTicket() {
 
   useEffect(() => {
     const fetchTickets = async () => {
+      if (!session?.user?.email) return;
+      
       const query = new URLSearchParams({
-        email: session?.user?.email
+        email: session.user.email
       })
       try {
+        setLoading(true)
         const res = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + '/my_ticket?' + query.toString(), {
           headers: {
             'Authorization': `Bearer ${session?.accessToken}`
@@ -37,10 +40,10 @@ export default function MyTicket() {
         setLoading(false)
       }
     }
-    if (status === 'authenticated') {
+    if (status === 'authenticated' && session?.user?.email) {
       fetchTickets()
     }
-  }, [status, session])
+  }, [status, session?.user?.email])
 
   if (loading) return <div className="py-20"><Loading /></div>
 

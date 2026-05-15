@@ -85,12 +85,20 @@ const TicketCard = ({ train, booking }) => {
       icon: Clock
     },
     selected: {
-      label: 'ACTION REQUIRED',
+      label: 'WINNER: ACTION REQUIRED',
       color: 'text-primary',
       bg: 'bg-primary/10',
       border: 'border-primary/20',
-      glow: 'shadow-md',
+      glow: 'shadow-md shadow-primary/20',
       icon: Sparkles
+    },
+    payment_pending: {
+      label: 'WINNER: ACTION REQUIRED',
+      color: 'text-primary',
+      bg: 'bg-primary/10',
+      border: 'border-primary/20',
+      glow: 'shadow-md shadow-primary/20',
+      icon: CreditCard
     },
     confirmed: {
       label: 'CONFIRMED',

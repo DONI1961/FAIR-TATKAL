@@ -160,7 +160,8 @@ def create_razorpay_order(
     # 9. Update booking status
     booking.status = Status.PAYMENT_PENDING.value
     if not booking.selected_at:
-        booking.selected_at = datetime.datetime.now()
+        import datetime
+        booking.selected_at = datetime.datetime.now(datetime.timezone.utc)
     session.add(booking)
     session.commit()
 
@@ -271,7 +272,8 @@ def expire_unpaid_winners(session: Session):
     where the payment window has lapsed, mark them expired,
     and promote the next waitlisted user.
     """
-    now = datetime.datetime.now()
+    import datetime
+    now = datetime.datetime.now(datetime.timezone.utc)
     cutoff = now - datetime.timedelta(minutes=PAYMENT_WINDOW_MINUTES)
 
     # Find all bookings that have been selected but not paid within the window

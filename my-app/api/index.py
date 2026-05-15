@@ -543,7 +543,6 @@ async def unPublishedTrains(session: Session = Depends(get_session)):
         results = []
         for journey in trains:
             train_dict = journey.model_dump() if hasattr(journey, 'model_dump') else journey.dict()
-            # We don't mock dates here so admin can see real data
             results.append(train_dict)
             
         return {
@@ -556,40 +555,46 @@ async def unPublishedTrains(session: Session = Depends(get_session)):
             'ok': False,
             'message': str(e)
         }
+
 @app.get('/my_ticket')
 async def myTicket(email:str, session: Session = Depends(get_session)):
-
     try:
-        print(email)
-        booking = session.exec(
-            select(model.Booking).where(model.Booking.user_email == email)
+        from sqlalchemy import func
+        # Case-insensitive email search
+        bookings_found = session.exec(
+            select(model.Booking).where(func.lower(model.Booking.user_email) == email.lower())
         ).all()
+        
         trains = []
-        print(booking)
-        if booking:
-            for b in booking:
+        valid_bookings = []
+        
+        if bookings_found:
+            for b in bookings_found:
                 train = session.exec(
                     select(Journey).where(Journey.id == b.journey_id)
-                ).one() 
+                ).first() 
                 if train:
-                    trains.append(train)
-            print(
-                {
-                    'ok': True,
-                    'booking': booking,
-                    'trains': trains
-                }
-            )
+                    train_dict = train.model_dump() if hasattr(train, 'model_dump') else train.dict()
+                    # Apply the same date mocking for consistency in view
+                    today = datetime.date.today()
+                    train_dict['departure_date'] = today
+                    train_dict['arrival_date'] = today
+                    
+                    trains.append(train_dict)
+                    valid_bookings.append(b)
+            
             return {
                 'ok': True,
-                'booking': booking,
+                'booking': valid_bookings,
                 'trains': trains
             }
+        
         return {
             'ok': False,
-            'message': 'Booking not found'
+            'message': 'No bookings found for this email.'
         }
     except Exception as e:
+        traceback.print_exc()
         return {
             'ok': False,
             'message': str(e)

@@ -38,7 +38,7 @@ def run_winner_selection(journey_id: int, session: Session):
     ).all()
     
     seg_user = segregate_user(users, bookings)
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(datetime.timezone.utc)
 
     for i, seat_class in enumerate(['economy', 'business', 'first']):
         if seat_class in seg_user and len(seg_user[seat_class]) != 0:
@@ -73,7 +73,7 @@ def run_winner_selection(journey_id: int, session: Session):
                         session.add(b)
 
     publish.published = True
-    publish.published_at = now
+    publish.published_at = datetime.datetime.now(datetime.timezone.utc)
     session.add(publish)
     session.commit()
     session.refresh(publish)
