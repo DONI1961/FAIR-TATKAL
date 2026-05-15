@@ -59,10 +59,36 @@ else:
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
 ALGORITHM = str(os.getenv('ALGORITHM'))
 
-db_path = os.path.join(os.path.dirname(__file__), "tatkal.db")
-dataBase_url = f"sqlite:///{db_path}"
+import shutil
 
-engine = create_engine(url=str(dataBase_url), echo=False, pool_pre_ping=True)
+# Database Configuration
+DATABASE_URL = os.getenv('DATABASE_URL')
+
+if DATABASE_URL:
+    dataBase_url = DATABASE_URL
+else:
+    # Vercel Read-only Filesystem Workaround
+    bundled_db_path = os.path.join(os.path.dirname(__file__), "tatkal.db")
+    writable_db_path = "/tmp/tatkal.db"
+
+    # Only copy if it doesn't exist in /tmp or if the bundled one is newer
+    if not os.path.exists(writable_db_path):
+        try:
+            shutil.copy2(bundled_db_path, writable_db_path)
+            os.chmod(writable_db_path, 0o666)
+        except Exception as e:
+            print(f"Error copying database to /tmp: {e}")
+            writable_db_path = bundled_db_path # Fallback to read-only
+
+    dataBase_url = f"sqlite:///{writable_db_path}"
+
+engine = create_engine(
+    url=str(dataBase_url), 
+    echo=False, 
+    pool_pre_ping=True,
+    # Needed for SQLite on multiple threads
+    connect_args={"check_same_thread": False} if "sqlite" in str(dataBase_url) else {}
+)
 
 def connect_create_db():
     SQLModel.metadata.create_all(engine)
