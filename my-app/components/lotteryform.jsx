@@ -63,7 +63,7 @@ const LotteryForm = ({ train, second, fn }) => {
       if (response.ok) {
         setSubmitted(true)
       } else {
-        alert('Failed to submit entry')
+        alert(response.message || 'Failed to submit entry')
       }
     } catch (err) {
       console.error(err)

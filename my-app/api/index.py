@@ -290,10 +290,19 @@ async def getTrains(from_station: str, to_station: str, date: date, session: Ses
         )
         results = session.exec(statement).all()
         journeys = []
+        import json
         for itrian, publish in results:
             train_dict = itrian.model_dump() if hasattr(itrian, 'model_dump') else itrian.dict()
             train_dict['published'] = publish.published
             
+            # Ensure seats and fare are lists (sometimes SQLite JSON comes as strings)
+            if isinstance(train_dict.get('seats'), str):
+                try: train_dict['seats'] = json.loads(train_dict['seats'])
+                except: train_dict['seats'] = [0, 0, 0]
+            if isinstance(train_dict.get('fare'), str):
+                try: train_dict['fare'] = json.loads(train_dict['fare'])
+                except: train_dict['fare'] = [0, 0, 0]
+
             # Dynamically update the dates and times to ensure the window is OPEN for testing
             train_dict['departure_date'] = date
             train_dict['arrival_date'] = date
@@ -316,6 +325,16 @@ async def getOneTrain(journey_id: int, session: Session = Depends(get_session)):
         ).one()
         
         train_dict = train.model_dump() if hasattr(train, 'model_dump') else train.dict()
+        
+        # Ensure seats and fare are lists
+        import json
+        if isinstance(train_dict.get('seats'), str):
+            try: train_dict['seats'] = json.loads(train_dict['seats'])
+            except: train_dict['seats'] = [0, 0, 0]
+        if isinstance(train_dict.get('fare'), str):
+            try: train_dict['fare'] = json.loads(train_dict['fare'])
+            except: train_dict['fare'] = [0, 0, 0]
+
         # Mock dates for the detail view too
         today = datetime.date.today()
         train_dict['departure_date'] = today
