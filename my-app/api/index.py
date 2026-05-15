@@ -459,24 +459,25 @@ async def publishLottery(journey_id: int, session: Session = Depends(get_session
         publish_id = run_winner_selection(journey_id, session)
         
         if publish_id:
-            # 3. BULK FIX: Mark all other instances of this same train as published 
-            # to prevent them from "reloading" in the admin engine backlog.
-            other_journeys = session.exec(select(Journey).where(Journey.train_number == train_num)).all()
-            other_ids = [j.id for j in other_journeys if j.id != journey_id]
+            # Aggressively mark ALL journeys for this same train as published
+            # This ensures they don't reappear in the backlog even if they didn't have a publish record
+            all_journeys = session.exec(select(Journey).where(Journey.train_number == train_num)).all()
+            for j in all_journeys:
+                p = session.exec(select(model.Publish).where(model.Publish.journey_id == j.id)).first()
+                if not p:
+                    p = model.Publish(journey_id=j.id, published=True, published_at=datetime.datetime.now())
+                    session.add(p)
+                else:
+                    p.published = True
+                    p.published_at = datetime.datetime.now()
+                    session.add(p)
             
-            if other_ids:
-                from sqlalchemy import update
-                session.execute(
-                    update(model.Publish)
-                    .where(model.Publish.journey_id.in_(other_ids))
-                    .values(published=True, published_at=datetime.datetime.now())
-                )
-                session.commit()
+            session.commit()
 
             return {
                 'ok': True,
                 'publish_id': publish_id,
-                'message': f"Published journey {journey_id} and cleared {len(other_ids)} backlog instances for train {train_num}."
+                'message': f"All lotteries for train {train_num} have been processed."
             }
         
         return {
@@ -528,30 +529,26 @@ async def resetTrainDev(journey_id: int, session: Session = Depends(get_session)
 @app.get('/un_published_trains')
 async def unPublishedTrains(session: Session = Depends(get_session)):
     try:
-        from sqlalchemy import func
-        # Join Journey and Publish tables to get all unpublished journeys
+        # Get journeys that have an unpublished record, grouped by train number for a clean view
         statement = (
-            select(Journey, model.Publish)
+            select(Journey)
             .join(model.Publish, Journey.id == model.Publish.journey_id)
             .where(model.Publish.published == False)
-            .group_by(Journey.train_number) # Deduplicate for a cleaner admin view
-            .limit(20) # Limit results to prevent UI overflow
+            .group_by(Journey.train_number)
+            .order_by(Journey.train_number) # Stable sorting
+            .limit(20)
         )
-        results = session.exec(statement).all()
+        trains = session.exec(statement).all()
         
-        trains = []
-        today = datetime.date.today()
-        for journey, publish in results:
+        results = []
+        for journey in trains:
             train_dict = journey.model_dump() if hasattr(journey, 'model_dump') else journey.dict()
-            
-            # Remove mocking here so admin can see ACTUAL dates to distinguish instances
-            # train_dict['departure_date'] = today ...
-            
-            trains.append(train_dict)
+            # We don't mock dates here so admin can see real data
+            results.append(train_dict)
             
         return {
             'ok': True,
-            'trains': trains
+            'trains': results
         }
     except Exception as e:
         traceback.print_exc()
