@@ -284,7 +284,7 @@ async def getTrains(from_station: str, to_station: str, date: date, session: Ses
             select(Journey, model.Publish)
             .join(model.Publish, Journey.id == model.Publish.journey_id)
             .where(
-                Journey.departure_date == date,
+                # Removed Journey.departure_date == date to make it flexible for all dates
                 func.lower(Journey.from_station) == func.lower(from_station),
                 func.lower(Journey.to_station) == func.lower(to_station),
             )
@@ -294,6 +294,13 @@ async def getTrains(from_station: str, to_station: str, date: date, session: Ses
         for itrian, publish in results:
             train_dict = itrian.model_dump() if hasattr(itrian, 'model_dump') else itrian.dict()
             train_dict['published'] = publish.published
+            
+            # Dynamically update the dates to match the requested date
+            train_dict['departure_date'] = date
+            train_dict['arrival_date'] = date
+            train_dict['opening_date'] = date
+            train_dict['closing_date'] = date
+            
             journeys.append(train_dict)
 
         return {'ok': True, 'journeys': journeys}
