@@ -470,17 +470,7 @@ const PaymentPage = () => {
       )}
     </>
   )
-="flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-slate-600 transition-colors"
-              >
-                <ArrowLeft size={14} />
-                Back to My Tickets
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  )
+
 }
 
 export default function PayPage() {

@@ -106,7 +106,7 @@ export default function Home() {
             {/* Switch Icon (Mobile only) */}
             <div className="md:hidden flex justify-center py-2">
                <div className="size-10 rounded-full bg-secondary border border-border flex items-center justify-center">
-                 <ArrowRightRight className="size-4 text-primary rotate-90" />
+                 <ArrowRight className="size-4 text-primary rotate-90" />
                </div>
             </div>
 

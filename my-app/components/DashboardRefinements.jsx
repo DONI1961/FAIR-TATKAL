@@ -3,6 +3,9 @@
 import React, { useRef, useEffect } from 'react';
 import { Train, ChevronDown, RotateCcw, Ticket, LineChart, Shield, Copy, Mic, Globe, WifiOff, AlertTriangle, RefreshCw, Volume2, HardDrive } from 'lucide-react';
 import Script from 'next/script';
+export default function DashboardRefinements() {
+  const chartRef = useRef(null);
+  const chartInstance = useRef(null);
 
   useEffect(() => {
     // We need to wait for Chart.js to be available on window
