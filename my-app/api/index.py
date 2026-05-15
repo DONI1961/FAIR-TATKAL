@@ -448,15 +448,40 @@ async def lottery(booking: model.Booking, session: Session = Depends(get_session
 @app.post('/publish_lottery')
 async def publishLottery(journey_id: int, session: Session = Depends(get_session)):
     try:
+        # 1. Get the train number for this journey to identify duplicates/backlog
+        journey = session.exec(select(Journey).where(Journey.id == journey_id)).first()
+        if not journey:
+            return {'ok': False, 'message': "Journey not found."}
+        
+        train_num = journey.train_number
+        
+        # 2. Run selection for the SPECIFIC journey requested
         publish_id = run_winner_selection(journey_id, session)
+        
         if publish_id:
+            # 3. BULK FIX: Mark all other instances of this same train as published 
+            # to prevent them from "reloading" in the admin engine backlog.
+            other_journeys = session.exec(select(Journey).where(Journey.train_number == train_num)).all()
+            other_ids = [j.id for j in other_journeys if j.id != journey_id]
+            
+            if other_ids:
+                from sqlalchemy import update
+                session.execute(
+                    update(model.Publish)
+                    .where(model.Publish.journey_id.in_(other_ids))
+                    .values(published=True, published_at=datetime.datetime.now())
+                )
+                session.commit()
+
             return {
                 'ok': True,
-                'publish_id': publish_id
+                'publish_id': publish_id,
+                'message': f"Published journey {journey_id} and cleared {len(other_ids)} backlog instances for train {train_num}."
             }
+        
         return {
             'ok': False,
-            'message': "Lottery already published or not found."
+            'message': "Lottery already published or could not be processed."
         }
     except Exception as e:
         traceback.print_exc()
