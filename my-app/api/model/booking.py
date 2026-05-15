@@ -26,5 +26,8 @@ class Booking(SQLModel, table=True):
     seat_class: SeatClass
     paid: bool = Field(default=False)
     status: str
+    # Bot detection fields
+    submission_duration_ms: Optional[int] = Field(default=0)
+    is_bot_flag: bool = Field(default=False)
     # Timestamp when user was selected as winner (for 5-min payment window)
     selected_at: Optional[datetime] = Field(default=None)
