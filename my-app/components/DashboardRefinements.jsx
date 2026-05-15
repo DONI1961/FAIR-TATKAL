@@ -430,8 +430,5 @@ import Script from 'next/script';
         </div>
       </div>
     </div>
- </div>
-      </div>
-    </div>
   );
 }

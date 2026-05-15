@@ -180,7 +180,12 @@ const PaymentPage = () => {
       }
       setLoading(false)
     }
-    if (status === 'authentica  // ─── Payment Success Screen ───
+    if (status === 'authenticated') {
+      fetchBookingDetails()
+    }
+  }, [status, session, bookingId])
+
+  // ─── Payment Success Screen ───
   if (paymentSuccess) {
     return (
       <div className="app-shell flex min-h-[75vh] items-center justify-center py-8">
