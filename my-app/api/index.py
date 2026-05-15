@@ -519,13 +519,8 @@ async def unPublishedTrains(session: Session = Depends(get_session)):
         for journey, publish in results:
             train_dict = journey.model_dump() if hasattr(journey, 'model_dump') else journey.dict()
             
-            # Consistent mocking for the admin preview
-            train_dict['departure_date'] = today
-            train_dict['arrival_date'] = today
-            train_dict['opening_date'] = today
-            train_dict['closing_date'] = today
-            train_dict['opening_time'] = "00:00:00"
-            train_dict['closing_time'] = "23:59:59"
+            # Remove mocking here so admin can see ACTUAL dates to distinguish instances
+            # train_dict['departure_date'] = today ...
             
             trains.append(train_dict)
             
