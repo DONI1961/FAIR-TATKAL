@@ -5,10 +5,13 @@ Includes: Train search, Lottery, Winner selection, Payment integration,
            Webhook handling, Background payment expiry scheduler.
 """
 
+import sys
+import os
+sys.path.insert(0, os.path.dirname(__file__))
+
 from fastapi import Depends, FastAPI, HTTPException, Request
 from sqlmodel import SQLModel, Session, create_engine, select
 from dotenv import load_dotenv
-import os
 from contextlib import asynccontextmanager
 from datetime import date
 import model
