@@ -11,7 +11,16 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
-  }
+  },
+  async redirects() {
+    return [
+      {
+        source: '/tickets',
+        destination: '/my_ticket',
+        permanent: true,
+      },
+    ]
+  },
 };
 
 export default nextConfig;
