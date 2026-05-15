@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Search, Calendar as CalendarIcon, MapPin, ArrowRightRight } from "lucide-react";
+import { Search, Calendar as CalendarIcon, MapPin, ArrowRightRight, Ticket } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
