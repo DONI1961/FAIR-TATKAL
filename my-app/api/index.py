@@ -108,7 +108,7 @@ async def lifespan(app: FastAPI):
     yield
     task.cancel()
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, root_path="/api")
 
 origins = [
     str(os.getenv('FRONTEND_URL')),
