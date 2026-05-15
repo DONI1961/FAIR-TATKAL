@@ -503,26 +503,38 @@ async def resetTrainDev(journey_id: int, session: Session = Depends(get_session)
 @app.get('/un_published_trains')
 async def unPublishedTrains(session: Session = Depends(get_session)):
     try:
-        publish = session.exec(
-            select(model.Publish).where(model.Publish.published == False)
-        ).all()
+        from sqlalchemy import func
+        # Join Journey and Publish tables to get all unpublished journeys
+        statement = (
+            select(Journey, model.Publish)
+            .join(model.Publish, Journey.id == model.Publish.journey_id)
+            .where(model.Publish.published == False)
+            .group_by(Journey.train_number) # Deduplicate for a cleaner admin view
+            .limit(20) # Limit results to prevent UI overflow
+        )
+        results = session.exec(statement).all()
+        
         trains = []
-        if len(publish) == 0:
-            return {
-                'ok': True,
-                'trains': []
-            }
-        for p in publish:
-            train = session.exec(
-                select(Journey).where(Journey.id == p.journey_id)
-            ).one() 
-            if train:
-                trains.append(train)
+        today = datetime.date.today()
+        for journey, publish in results:
+            train_dict = journey.model_dump() if hasattr(journey, 'model_dump') else journey.dict()
+            
+            # Consistent mocking for the admin preview
+            train_dict['departure_date'] = today
+            train_dict['arrival_date'] = today
+            train_dict['opening_date'] = today
+            train_dict['closing_date'] = today
+            train_dict['opening_time'] = "00:00:00"
+            train_dict['closing_time'] = "23:59:59"
+            
+            trains.append(train_dict)
+            
         return {
             'ok': True,
             'trains': trains
         }
     except Exception as e:
+        traceback.print_exc()
         return {
             'ok': False,
             'message': str(e)
