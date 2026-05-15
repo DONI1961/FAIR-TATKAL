@@ -4,9 +4,10 @@ import { cn } from '@/lib/utils';
 
 export const PremiumButton = ({ children, className, onClick, variant = 'primary' }) => {
   const variants = {
-    primary: "bg-orange-500 text-white shadow-[0_0_20px_rgba(249,115,22,0.4)] hover:shadow-[0_0_30px_rgba(249,115,22,0.6)]",
-    secondary: "bg-white/10 text-white border border-white/20 backdrop-blur-md hover:bg-white/20",
-    outline: "bg-transparent border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+    primary: "bg-primary text-primary-foreground shadow-lg hover:shadow-primary/40",
+    secondary: "bg-secondary text-secondary-foreground border border-border backdrop-blur-md hover:opacity-90",
+    accent: "bg-accent text-accent-foreground shadow-lg hover:shadow-accent/40",
+    outline: "bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
   };
 
   return (

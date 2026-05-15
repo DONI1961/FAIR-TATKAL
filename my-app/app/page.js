@@ -34,10 +34,9 @@ export default function Page() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Cinematic Background Layer */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(30,58,138,0.2)_0%,rgba(5,11,24,1)_100%)]" />
         <div className="absolute inset-0 hero-gradient opacity-60" />
       </div>
 
@@ -50,27 +49,27 @@ export default function Page() {
         >
           {/* Left Column: Hero Content */}
           <div className="space-y-8">
-            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-1.5 backdrop-blur-md">
-              <Sparkles className="size-4 text-orange-500" />
-              <span className="text-xs font-bold uppercase tracking-wider text-orange-500">The Future of Rail Travel</span>
+            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 backdrop-blur-md">
+              <Sparkles className="size-4 text-accent" />
+              <span className="text-xs font-bold uppercase tracking-wider text-accent">The Future of Rail Travel</span>
             </motion.div>
 
-            <motion.h1 variants={itemVariants} className="text-5xl font-extrabold tracking-tight text-white sm:text-7xl">
+            <motion.h1 variants={itemVariants} className="text-5xl font-extrabold tracking-tight text-foreground sm:text-7xl">
               Experience the <br />
-              <span className="bg-gradient-to-r from-orange-400 to-amber-600 bg-clip-text text-transparent">Fair Tatkal</span> Era.
+              <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">Fair Tatkal</span> Era.
             </motion.h1>
 
-            <motion.p variants={itemVariants} className="max-w-lg text-lg leading-relaxed text-slate-300">
+            <motion.p variants={itemVariants} className="max-w-lg text-lg leading-relaxed text-muted-foreground">
               No more stressful races. No more bot advantages. Just a fair, transparent, and cinematic railway booking experience powered by weighted lottery intelligence.
             </motion.p>
 
             <motion.div variants={itemVariants} className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2 text-sm text-slate-400">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <ShieldCheck className="size-5 text-emerald-500" />
                 Aadhaar Verified
               </div>
-              <div className="flex items-center gap-2 text-sm text-slate-400">
-                <Zap className="size-5 text-blue-500" />
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Zap className="size-5 text-primary" />
                 2G-Optimized
               </div>
             </motion.div>
@@ -82,13 +81,13 @@ export default function Page() {
 
           {/* Right Column: Sign In Card */}
           <motion.div variants={itemVariants} className="flex justify-center lg:justify-end">
-            <GlassCard className="w-full max-w-md border-white/10 bg-white/5 p-10 text-center">
+            <GlassCard className="w-full max-w-md p-10 text-center">
               <div className="mb-8">
-                <div className="mx-auto flex size-20 items-center justify-center rounded-3xl bg-gradient-to-br from-orange-500 to-amber-600 shadow-lg shadow-orange-500/40">
+                <div className="mx-auto flex size-20 items-center justify-center rounded-3xl bg-gradient-to-br from-primary to-blue-600 shadow-lg shadow-primary/20">
                   <Ticket className="size-10 text-white" />
                 </div>
-                <h2 className="mt-6 text-3xl font-bold text-white">Board the System</h2>
-                <p className="mt-2 text-slate-400">Sign in with Google to start your fair journey.</p>
+                <h2 className="mt-6 text-3xl font-bold text-foreground">Board the System</h2>
+                <p className="mt-2 text-muted-foreground">Sign in with Google to start your fair journey.</p>
               </div>
 
               <div className="space-y-4">
@@ -100,24 +99,24 @@ export default function Page() {
                   <ArrowRight className="size-5" />
                 </PremiumButton>
 
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   By continuing, you agree to our terms of service and fairness policy.
                 </p>
               </div>
 
               {/* Trust Indicators */}
-              <div className="mt-10 grid grid-cols-3 gap-4 border-t border-white/10 pt-8">
+              <div className="mt-10 grid grid-cols-3 gap-4 border-t border-border pt-8">
                 <div className="text-center">
-                  <div className="text-xl font-bold text-white">100%</div>
-                  <div className="text-[10px] uppercase tracking-wider text-slate-500">Fairness</div>
+                  <div className="text-xl font-bold text-foreground">100%</div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Fairness</div>
                 </div>
-                <div className="text-center border-x border-white/10">
-                  <div className="text-xl font-bold text-white">0s</div>
-                  <div className="text-[10px] uppercase tracking-wider text-slate-500">Latency</div>
+                <div className="text-center border-x border-border">
+                  <div className="text-xl font-bold text-foreground">0s</div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Latency</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-bold text-white">AI</div>
-                  <div className="text-[10px] uppercase tracking-wider text-slate-500">Anti-Bot</div>
+                  <div className="text-xl font-bold text-foreground">AI</div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Anti-Bot</div>
                 </div>
               </div>
             </GlassCard>
@@ -125,8 +124,8 @@ export default function Page() {
         </motion.div>
 
         {/* Floating Ambient Elements */}
-        <div className="absolute -bottom-40 -left-40 size-96 rounded-full bg-blue-600/10 blur-[120px]" />
-        <div className="absolute top-1/4 -right-20 size-80 rounded-full bg-orange-600/5 blur-[100px]" />
+        <div className="absolute -bottom-40 -left-40 size-96 rounded-full bg-primary/5 dark:bg-primary/10 blur-[120px]" />
+        <div className="absolute top-1/4 -right-20 size-80 rounded-full bg-accent/5 dark:bg-accent/5 blur-[100px]" />
       </main>
     </div>
   )

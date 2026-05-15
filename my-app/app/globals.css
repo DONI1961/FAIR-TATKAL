@@ -49,39 +49,72 @@
 }
 
 :root {
-  --background: oklch(0.12 0.02 250);
-  --foreground: oklch(0.98 0.01 250);
-  --card: oklch(0.18 0.04 250 / 70%);
-  --card-foreground: oklch(0.98 0.01 250);
-  --popover: oklch(0.18 0.04 250);
-  --popover-foreground: oklch(0.98 0.01 250);
-  --primary: oklch(0.55 0.2 40); /* Railway Orange */
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.25 0.05 250); /* Deep Railway Blue */
-  --secondary-foreground: oklch(0.98 0.01 250);
-  --muted: oklch(0.25 0.02 250);
-  --muted-foreground: oklch(0.7 0.02 250);
-  --accent: oklch(0.55 0.2 40);
-  --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.55 0.2 25);
-  --border: oklch(1 0 0 / 15%);
-  --input: oklch(1 0 0 / 10%);
-  --ring: oklch(0.55 0.2 40 / 50%);
+  /* Premium Light Mode */
+  --background: #F5F9FF;
+  --foreground: #111827;
+  --card: rgba(255, 255, 255, 0.8);
+  --card-foreground: #111827;
+  --popover: #FFFFFF;
+  --popover-foreground: #111827;
+  --primary: #0B4DA1;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F3F4F6;
+  --secondary-foreground: #111827;
+  --muted: #F3F4F6;
+  --muted-foreground: #6B7280;
+  --accent: #FF7A00;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --border: rgba(0, 77, 161, 0.1);
+  --input: rgba(0, 77, 161, 0.05);
+  --ring: rgba(11, 77, 161, 0.4);
   --radius: 1.5rem;
+}
+
+.dark {
+  /* Cinematic Dark Mode */
+  --background: #050B18;
+  --foreground: #F8FAFC;
+  --card: rgba(15, 23, 42, 0.7);
+  --card-foreground: #F8FAFC;
+  --popover: #0F172A;
+  --popover-foreground: #F8FAFC;
+  --primary: #2563EB;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1E293B;
+  --secondary-foreground: #F8FAFC;
+  --muted: #1E293B;
+  --muted-foreground: #94A3B8;
+  --accent: #FF8C42;
+  --accent-foreground: #FFFFFF;
+  --destructive: #991B1B;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.05);
+  --ring: rgba(37, 99, 235, 0.4);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/50 transition-colors duration-300;
   }
   body {
-    @apply bg-[#050B18] text-foreground antialiased selection:bg-orange-500/30;
-    background-image: 
-      radial-gradient(circle at 0% 0%, rgba(30, 58, 138, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 100% 0%, rgba(249, 115, 22, 0.08) 0%, transparent 40%),
-      radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1) 0%, rgba(5, 11, 24, 1) 100%);
+    @apply bg-background text-foreground antialiased selection:bg-primary/30;
+    background-image: var(--bg-gradient);
     background-attachment: fixed;
   }
+  
+  :root {
+    --bg-gradient: radial-gradient(circle at 0% 0%, rgba(11, 77, 161, 0.03) 0%, transparent 50%),
+                   radial-gradient(circle at 100% 0%, rgba(255, 122, 0, 0.03) 0%, transparent 40%),
+                   #F5F9FF;
+  }
+
+  .dark {
+    --bg-gradient: radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
+                   radial-gradient(circle at 100% 0%, rgba(255, 140, 66, 0.08) 0%, transparent 40%),
+                   radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1) 0%, rgba(5, 11, 24, 1) 100%);
+  }
+
   html {
     @apply font-sans;
     scroll-behavior: smooth;
@@ -90,24 +123,40 @@
 
 @layer utilities {
   .glass-card {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)];
+    @apply backdrop-blur-xl border border-border shadow-lg;
+    background: var(--card);
   }
   
   .glass-nav {
-    @apply bg-slate-950/50 backdrop-blur-2xl border-b border-white/5 sticky top-0 z-50;
+    @apply backdrop-blur-2xl border-b border-border sticky top-0 z-50;
+    background: var(--nav-bg);
+  }
+  
+  :root {
+    --nav-bg: rgba(255, 255, 255, 0.8);
+  }
+  
+  .dark {
+    --nav-bg: rgba(15, 23, 42, 0.8);
   }
 
   .text-glow {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    text-shadow: 0 0 20px var(--glow-color);
   }
+  
+  :root { --glow-color: rgba(11, 77, 161, 0.1); }
+  .dark { --glow-color: rgba(255, 255, 255, 0.2); }
 
   .orange-glow {
-    box-shadow: 0 0 30px rgba(249, 115, 22, 0.2);
+    box-shadow: 0 0 30px rgba(255, 122, 0, 0.15);
   }
 
   .hero-gradient {
-    background: radial-gradient(100% 100% at 50% 0%, rgba(30, 58, 138, 0.2) 0%, rgba(5, 11, 24, 0) 100%);
+    background: radial-gradient(100% 100% at 50% 0%, var(--hero-glow) 0%, transparent 100%);
   }
+  
+  :root { --hero-glow: rgba(11, 77, 161, 0.05); }
+  .dark { --hero-glow: rgba(37, 99, 235, 0.15); }
   
   .app-shell {
     @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
