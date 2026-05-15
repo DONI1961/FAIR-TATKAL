@@ -1,15 +1,14 @@
 'use client'
-import React, { use, useEffect, Suspense } from 'react'
-
-import { useSearchParams } from 'next/navigation'
+import React, { useEffect, useState, Suspense } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from "framer-motion"
 import { useSession } from '@/components/auth-provider'
-import { useState } from 'react'
 import LotteryForm from '@/components/lotteryform'
 import NotFound from '@/components/notfound'
 import Loading from '@/components/loading'
-import { useRouter } from 'next/navigation'
 import WindowOpening from '@/components/opening'
 import WindowClosed from '@/components/closed'
+import { GlassCard } from '@/components/design-system/GlassCard'
 
 function BookPageInner() {
   const router = useRouter()
@@ -27,7 +26,6 @@ function BookPageInner() {
 
   const [opening, setOpening] = useState(null)
   const [seconds, setSeconds] = useState(null)
-  const [res, setRes] = useState(null)
 
   const fetchData = async () => {
     if (!journey_id || authStatus !== 'authenticated') return
@@ -67,7 +65,6 @@ function BookPageInner() {
 
       if (timeData.ok) {
         setOpening(timeData.status)
-        setRes(timeData)
         if (timeData.status === 'opening' || timeData.status === 'open') {
           setSeconds(timeData.seconds)
         }
@@ -87,20 +84,53 @@ function BookPageInner() {
     }
   }, [authStatus, journey_id])
 
-  if (loading) return <div className="p-3"><Loading /></div>
-  if (!hasTrain) return <div className="p-3"><NotFound /></div>
+  if (loading) return <div className="min-h-screen flex items-center justify-center"><Loading /></div>
+  if (!hasTrain) return <NotFound />
 
   return (
-    <div className='p-3'>
-      {opening === 'opening' ? (
-        <WindowOpening second={seconds} fn={fetchData} />
-      ) : opening === 'closed' ? (
-        <WindowClosed />
-      ) : opening === 'open' ? (
-        <LotteryForm train={train} second={seconds} fn={fetchData} />
-      ) : (
-        <Loading />
-      )}
+    <div className="relative min-h-screen py-12 px-4 flex flex-col items-center">
+      {/* Background Ambience */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 size-[600px] rounded-full bg-blue-600/5 blur-[120px]" />
+        <div className="absolute bottom-1/4 right-1/4 size-[600px] rounded-full bg-orange-600/5 blur-[120px]" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-4xl">
+        <AnimatePresence mode="wait">
+          {opening === 'opening' ? (
+            <motion.div
+              key="opening"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+            >
+              <WindowOpening second={seconds} fn={fetchData} />
+            </motion.div>
+          ) : opening === 'closed' ? (
+            <motion.div
+              key="closed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+            >
+              <WindowClosed />
+            </motion.div>
+          ) : opening === 'open' ? (
+            <motion.div
+              key="open"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+            >
+              <LotteryForm train={train} second={seconds} fn={fetchData} />
+            </motion.div>
+          ) : (
+            <div key="loading" className="flex justify-center py-20">
+              <Loading />
+            </div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }

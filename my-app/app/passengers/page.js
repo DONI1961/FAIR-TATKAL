@@ -4,20 +4,35 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "@/components/auth-provider"
 import Loading from "@/components/loading"
-import { Badge } from "@/components/ui/badge"
-import { Train, Users, ChevronDown, CheckCircle2, Clock, XCircle, CreditCard } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { 
+  Train, 
+  Users, 
+  ChevronDown, 
+  CheckCircle2, 
+  Clock, 
+  XCircle, 
+  CreditCard,
+  Search,
+  Filter,
+  ArrowRight,
+  UserCheck
+} from "lucide-react"
+import { GlassCard } from "@/components/design-system/GlassCard"
+import { PremiumButton } from "@/components/design-system/PremiumButton"
+import { cn } from "@/lib/utils"
 
 const STATUS_CONFIG = {
-  selected:        { label: 'Winner',          color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  confirmed:       { label: 'Paid',            color: 'bg-blue-50 text-blue-700 border-blue-200' },
-  payment_pending: { label: 'Payment Pending', color: 'bg-amber-50 text-amber-700 border-amber-200' },
-  payment_failed:  { label: 'Payment Failed',  color: 'bg-red-50 text-red-700 border-red-200' },
+  selected:        { label: 'Winner',          color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' },
+  confirmed:       { label: 'Verified Payment', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' },
+  payment_pending: { label: 'Pending Action',  color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' },
+  payment_failed:  { label: 'Payment Void',    color: 'text-red-400 bg-red-500/10 border-red-500/20' },
 }
 
 const CLASS_COLOR = {
-  economy:  'bg-slate-100 text-slate-700',
-  business: 'bg-indigo-50 text-indigo-700',
-  first:    'bg-amber-50 text-amber-700',
+  economy:  'text-slate-400 bg-slate-500/10 border-slate-500/20',
+  business: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
+  first:    'text-amber-400 bg-amber-500/10 border-amber-500/20',
 }
 
 export default function PassengersPage() {
@@ -33,16 +48,13 @@ export default function PassengersPage() {
   const [error, setError] = useState(null)
   const [selectedDate, setSelectedDate] = useState('')
 
-  // Guard: admin only — wait until role is explicitly known (not undefined)
   useEffect(() => {
     if (status === 'unauthenticated') router.push('/')
     else if (status === 'authenticated' && session?.user?.role !== undefined && session?.user?.role !== 'admin') router.push('/')
   }, [session, status, router])
 
-  // Load published trains
   useEffect(() => {
     const fetchTrains = async () => {
-      console.log('[passengers] fetchTrains triggered. selectedDate:', `"${selectedDate}"`)
       setLoadingTrains(true)
       try {
         const params = new URLSearchParams()
@@ -50,24 +62,19 @@ export default function PassengersPage() {
           params.append('filter_date', selectedDate)
         }
         
-        const queryString = params.toString()
-        const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/published_trains${queryString ? '?' + queryString : ''}`
-        console.log('[passengers] Fetching from URL:', url)
-        
+        const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/published_trains${params.toString() ? '?' + params.toString() : ''}`
         const res = await fetch(url)
         const data = await res.json()
-        console.log('[passengers] Received data:', data)
         
         if (data.ok) {
           setTrains(data.trains)
           setError(data.message || null)
         } else {
           setTrains([])
-          setError(data.message || 'Error loading trains')
+          setError(data.message || 'Error loading target journeys')
         }
       } catch (err) {
-        console.error('[passengers] fetch error:', err)
-        setError('Network error loading trains')
+        setError('Network error: Intelligence link severed')
         setTrains([])
       } finally {
         setLoadingTrains(false)
@@ -76,7 +83,6 @@ export default function PassengersPage() {
     fetchTrains()
   }, [selectedDate])
 
-  // Load passengers when a train is selected
   const handleSelectTrain = async (train) => {
     setSelectedTrain(train)
     setDropdownOpen(false)
@@ -94,7 +100,7 @@ export default function PassengersPage() {
     }
   }
 
-  if (status === 'loading' || loadingTrains) return <Loading />
+  if (status === 'loading' || loadingTrains) return <div className="min-h-screen flex items-center justify-center"><Loading /></div>
 
   const stats = {
     total:   passengers.length,
@@ -104,206 +110,266 @@ export default function PassengersPage() {
   }
 
   return (
-    <div className="app-shell py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-1">
-          <div className="flex size-10 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
-            <Users className="size-5" />
-          </div>
-          <h1 className="text-2xl font-bold text-slate-900">Passenger List</h1>
-          <span className="ml-2 rounded-full bg-indigo-50 px-3 py-0.5 text-xs font-semibold text-indigo-600 border border-indigo-100 uppercase tracking-wider">Admin</span>
-        </div>
-        <p className="text-sm text-slate-500 ml-13">View selected passengers for any announced lottery journey.</p>
+    <div className="relative min-h-screen py-12 px-4">
+      {/* Background Ambience */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 size-[600px] rounded-full bg-blue-600/5 blur-[120px]" />
+        <div className="absolute bottom-1/4 right-1/4 size-[600px] rounded-full bg-orange-600/5 blur-[120px]" />
       </div>
 
-      {error && (
-        <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium flex items-center gap-2">
-          <XCircle className="size-4" />
-          {error}
-        </div>
-      )}
-
-      {/* Filters Row */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        {/* Date Filter */}
-        <div className="w-full sm:w-64">
-          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 ml-1 flex items-center justify-between">
-            Filter by Date
-            {selectedDate && (
-              <button 
-                onClick={() => setSelectedDate('')}
-                className="text-[10px] text-indigo-600 hover:underline font-bold"
-              >
-                Clear
-              </button>
-            )}
-          </label>
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => {
-              console.log('[passengers] Date input changed:', e.target.value)
-              setSelectedDate(e.target.value)
-              setSelectedTrain(null)
-              setPassengers([])
-            }}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-slate-900 shadow-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
-          />
-        </div>
-
-        {/* Journey Selector */}
-        <div className="flex-1 relative">
-          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Select Journey</label>
-          <button
-            onClick={() => setDropdownOpen(o => !o)}
-            className="w-full flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-left shadow-sm hover:border-indigo-400 hover:shadow-md transition-all h-[58px]"
+      <div className="relative z-10 app-shell">
+        {/* Header Section */}
+        <div className="mb-12">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-4 mb-4"
           >
-          {selectedTrain ? (
-            <div className="flex items-center gap-3 min-w-0">
-              <Train className="size-4 text-indigo-600 shrink-0" />
-              <span className="font-semibold text-slate-900 truncate">{selectedTrain.train_name}</span>
-              <span className="text-xs text-slate-500 font-mono shrink-0">#{selectedTrain.train_number}</span>
-              <span className="text-xs text-slate-400 shrink-0">{selectedTrain.from_station} → {selectedTrain.to_station}</span>
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-lg shadow-indigo-500/10">
+              <UserCheck className="size-7" />
             </div>
-          ) : (
-            <span className="text-slate-400 font-medium">Select a published journey…</span>
-          )}
-          <ChevronDown className={`size-4 text-slate-400 shrink-0 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
-        </button>
+            <div>
+              <h1 className="text-3xl font-black text-white tracking-tight">Intelligence Center</h1>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-400/80">Passenger Management Protocol</p>
+            </div>
+          </motion.div>
+        </div>
 
-        {dropdownOpen && (
-          <div className="absolute z-50 mt-2 w-full rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden">
-            {trains.length === 0 ? (
-              <div className="px-5 py-4 text-sm text-slate-400">
-                {selectedDate 
-                  ? `No published journeys found for ${selectedDate}.` 
-                  : "No published journeys yet."}
-              </div>
-            ) : (
-              <ul className="max-h-72 overflow-y-auto divide-y divide-slate-50">
-                {trains.map(t => (
-                  <li
-                    key={t.id}
-                    onClick={() => handleSelectTrain(t)}
-                    className="flex items-center gap-3 px-5 py-3 cursor-pointer hover:bg-indigo-50 transition-colors"
-                  >
-                    <Train className="size-4 text-indigo-500 shrink-0" />
-                    <div className="min-w-0">
-                      <p className="font-semibold text-sm text-slate-900 truncate">{t.train_name} <span className="text-xs text-slate-400 font-mono">#{t.train_number}</span></p>
-                      <p className="text-xs text-slate-500 truncate">{t.from_station} → {t.to_station} &bull; {t.departure_date}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+        {error && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium flex items-center gap-3 backdrop-blur-md"
+          >
+            <XCircle className="size-4" />
+            {error}
+          </motion.div>
         )}
-      </div>
-    </div>
 
-      {/* Passenger Table */}
-      {selectedTrain && (
-        loadingPass ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="animate-spin size-8 rounded-full border-2 border-indigo-300 border-t-indigo-600" />
+        {/* Filters Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
+          {/* Date Filter */}
+          <div className="lg:col-span-3">
+            <GlassCard className="p-4 border-white/5 h-full">
+              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 px-1">
+                Temporal Range
+              </label>
+              <div className="relative group">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => {
+                    setSelectedDate(e.target.value)
+                    setSelectedTrain(null)
+                    setPassengers([])
+                  }}
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white focus:border-indigo-500 outline-none transition-all"
+                />
+                <div className="absolute inset-0 rounded-xl bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+              </div>
+            </GlassCard>
           </div>
-        ) : (
-          <>
-            {/* Stats row */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-              {[
-                { label: 'Total Winners',    value: stats.total,   icon: Users,         color: 'text-indigo-600 bg-indigo-50' },
-                { label: 'Payment Done',     value: stats.paid,    icon: CheckCircle2,  color: 'text-emerald-600 bg-emerald-50' },
-                { label: 'Awaiting Payment', value: stats.pending, icon: Clock,         color: 'text-amber-600 bg-amber-50' },
-                { label: 'Payment Failed',   value: stats.failed,  icon: XCircle,       color: 'text-red-600 bg-red-50' },
-              ].map(({ label, value, icon: Icon, color }) => (
-                <div key={label} className="rounded-2xl border border-slate-200 bg-white p-4 flex items-center gap-3 shadow-sm">
-                  <div className={`flex size-9 items-center justify-center rounded-xl ${color}`}>
-                    <Icon className="size-4" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-slate-900">{value}</p>
-                    <p className="text-xs text-slate-500">{label}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
 
-            {passengers.length === 0 ? (
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 py-16 text-center">
-                <Users className="size-8 text-slate-300 mx-auto mb-3" />
-                <p className="text-slate-500 font-medium">No winners selected for this journey.</p>
-                <p className="text-sm text-slate-400 mt-1">No passengers applied or the lottery had no eligible entries.</p>
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-                <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-                  <h2 className="font-semibold text-slate-800">
-                    {selectedTrain.train_name} — {selectedTrain.from_station} → {selectedTrain.to_station}
-                  </h2>
-                  <span className="text-xs text-slate-400">{passengers.length} passenger{passengers.length !== 1 ? 's' : ''}</span>
-                </div>
+          {/* Journey Selector */}
+          <div className="lg:col-span-9">
+            <GlassCard className="p-4 border-white/5 relative">
+              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 px-1">
+                Target Journey Vector
+              </label>
+              <button
+                onClick={() => setDropdownOpen(o => !o)}
+                className="w-full flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-3.5 text-left transition-all hover:bg-white/10"
+              >
+                {selectedTrain ? (
+                  <div className="flex items-center gap-4 min-w-0">
+                    <Train className="size-4 text-orange-500 shrink-0" />
+                    <span className="font-bold text-white truncate">{selectedTrain.train_name}</span>
+                    <span className="text-xs font-mono text-slate-400 shrink-0">#{selectedTrain.train_number}</span>
+                    <span className="hidden sm:inline text-xs text-slate-500 shrink-0">{selectedTrain.from_station} → {selectedTrain.to_station}</span>
+                  </div>
+                ) : (
+                  <span className="text-slate-500 font-medium italic">Select active coordinate for scanning...</span>
+                )}
+                <ChevronDown className={cn("size-4 text-slate-500 transition-transform", dropdownOpen && "rotate-180")} />
+              </button>
 
-                {/* Table */}
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider">
-                        <th className="px-5 py-3 text-left font-semibold">#</th>
-                        <th className="px-5 py-3 text-left font-semibold">Passenger</th>
-                        <th className="px-5 py-3 text-left font-semibold">Class</th>
-                        <th className="px-5 py-3 text-left font-semibold">Status</th>
-                        <th className="px-5 py-3 text-left font-semibold">Payment</th>
-                        <th className="px-5 py-3 text-left font-semibold">Selected At</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-50">
-                      {passengers.map((p, i) => (
-                        <tr key={p.booking_id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="px-5 py-3.5 text-slate-400 font-mono text-xs">{i + 1}</td>
-                          <td className="px-5 py-3.5">
-                            <p className="font-semibold text-slate-900">{p.name}</p>
-                            <p className="text-xs text-slate-400">{p.email}</p>
-                          </td>
-                          <td className="px-5 py-3.5">
-                            <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-semibold capitalize ${CLASS_COLOR[p.seat_class] || 'bg-slate-100 text-slate-600'}`}>
-                              {p.seat_class}
-                            </span>
-                          </td>
-                          <td className="px-5 py-3.5">
-                            {STATUS_CONFIG[p.status] ? (
-                              <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-semibold border ${STATUS_CONFIG[p.status].color}`}>
-                                {STATUS_CONFIG[p.status].label}
-                              </span>
-                            ) : (
-                              <span className="text-slate-400 text-xs capitalize">{p.status}</span>
-                            )}
-                          </td>
-                          <td className="px-5 py-3.5">
-                            {p.paid ? (
-                              <span className="flex items-center gap-1 text-emerald-600 text-xs font-semibold">
-                                <CheckCircle2 className="size-3.5" /> Paid
-                              </span>
-                            ) : (
-                              <span className="flex items-center gap-1 text-slate-400 text-xs">
-                                <CreditCard className="size-3.5" /> Pending
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-5 py-3.5 text-xs text-slate-400 font-mono">
-                            {p.selected_at ? p.selected_at.slice(0, 16).replace('T', ' ') : '—'}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              <AnimatePresence>
+                {dropdownOpen && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                    className="absolute left-4 right-4 z-50 mt-2 rounded-2xl border border-white/10 bg-slate-900/95 p-2 backdrop-blur-2xl shadow-2xl overflow-hidden"
+                  >
+                    {trains.length === 0 ? (
+                      <div className="px-6 py-8 text-center text-sm text-slate-500">
+                        {selectedDate 
+                          ? `No mission data available for ${selectedDate}.` 
+                          : "Intelligence database empty. Awaiting train publications."}
+                      </div>
+                    ) : (
+                      <ul className="max-h-72 overflow-y-auto space-y-1">
+                        {trains.map(t => (
+                          <li
+                            key={t.id}
+                            onClick={() => handleSelectTrain(t)}
+                            className="flex items-center gap-4 px-4 py-3 cursor-pointer rounded-xl hover:bg-white/5 transition-colors group"
+                          >
+                            <Train className="size-4 text-slate-500 group-hover:text-orange-500 transition-colors shrink-0" />
+                            <div className="min-w-0">
+                              <p className="font-bold text-sm text-white truncate">{t.train_name} <span className="text-xs font-mono text-slate-500">#{t.train_number}</span></p>
+                              <p className="text-xs text-slate-500 truncate uppercase tracking-tighter">{t.from_station} &rarr; {t.to_station} &bull; {t.departure_date}</p>
+                            </div>
+                            <ArrowRight className="size-4 text-white/0 group-hover:text-white/20 ml-auto transition-all" />
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </GlassCard>
+          </div>
+        </div>
+
+        {/* Content Section */}
+        <AnimatePresence mode="wait">
+          {selectedTrain && (
+            <motion.div 
+              key={selectedTrain.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              {loadingPass ? (
+                <div className="flex flex-col items-center justify-center py-24 gap-4">
+                  <div className="animate-spin size-10 rounded-full border-2 border-indigo-500/20 border-t-indigo-500" />
+                  <p className="text-xs font-black uppercase tracking-widest text-slate-500 animate-pulse">Decrypting Passenger Data...</p>
                 </div>
-              </div>
-            )}
-          </>
-        )
-      )}
+              ) : (
+                <>
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    {[
+                      { label: 'Total Winners',    value: stats.total,   icon: Users,         color: 'text-indigo-400', bg: 'bg-indigo-500/10' },
+                      { label: 'Verified Seats',   value: stats.paid,    icon: CheckCircle2,  color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+                      { label: 'Pending Action',   value: stats.pending, icon: Clock,         color: 'text-amber-400', bg: 'bg-amber-500/10' },
+                      { label: 'Void Allocations', value: stats.failed,  icon: XCircle,       color: 'text-red-400', bg: 'bg-red-500/10' },
+                    ].map(({ label, value, icon: Icon, color, bg }) => (
+                      <GlassCard key={label} className="p-6 border-white/5 relative overflow-hidden group">
+                        <div className={cn("absolute -right-4 -bottom-4 size-24 opacity-5 group-hover:opacity-10 transition-opacity rotate-12", color)}>
+                          <Icon className="size-full" />
+                        </div>
+                        <div className={cn("flex size-10 items-center justify-center rounded-xl mb-4", bg, color)}>
+                          <Icon className="size-5" />
+                        </div>
+                        <p className="text-3xl font-black text-white mb-1">{value}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</p>
+                      </GlassCard>
+                    ))}
+                  </div>
+
+                  {passengers.length === 0 ? (
+                    <GlassCard className="py-24 text-center border-white/5">
+                      <div className="size-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
+                        <Users className="size-8 text-slate-700" />
+                      </div>
+                      <p className="text-white font-bold text-lg">No active allocations found.</p>
+                      <p className="text-slate-500 text-sm mt-2 max-w-xs mx-auto italic">Scanning complete. This coordinate appears to have zero eligible lottery entries.</p>
+                    </GlassCard>
+                  ) : (
+                    <GlassCard className="border-white/5 overflow-hidden">
+                      <div className="px-8 py-6 border-b border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/[0.02]">
+                        <div className="flex items-center gap-4">
+                          <div className="flex size-10 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 border border-orange-500/20">
+                            <Train className="size-5" />
+                          </div>
+                          <div>
+                            <h2 className="font-black text-white tracking-tight">
+                              {selectedTrain.train_name} <span className="text-slate-500 font-normal">&bull;</span> {selectedTrain.from_station} &rarr; {selectedTrain.to_station}
+                            </h2>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">{selectedTrain.departure_date} &bull; {passengers.length} Identities Scanned</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                           <PremiumButton className="h-9 px-4 text-[10px] bg-indigo-500/10 border-indigo-500/20 text-indigo-400">
+                             Export Manifest
+                           </PremiumButton>
+                        </div>
+                      </div>
+
+                      {/* Data Grid */}
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                          <thead>
+                            <tr className="bg-white/5 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                              <th className="px-8 py-4 border-b border-white/5">Identity Index</th>
+                              <th className="px-8 py-4 border-b border-white/5">Passenger Entity</th>
+                              <th className="px-8 py-4 border-b border-white/5">Class Vector</th>
+                              <th className="px-8 py-4 border-b border-white/5">Mission Status</th>
+                              <th className="px-8 py-4 border-b border-white/5">Payment Hook</th>
+                              <th className="px-8 py-4 border-b border-white/5 text-right">Timestamp</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-white/5">
+                            {passengers.map((p, i) => (
+                              <motion.tr 
+                                key={p.booking_id} 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: i * 0.05 }}
+                                className="hover:bg-white/[0.02] transition-colors group"
+                              >
+                                <td className="px-8 py-5 text-slate-600 font-mono text-[11px]">[{String(i + 1).padStart(3, '0')}]</td>
+                                <td className="px-8 py-5">
+                                  <p className="font-bold text-white text-sm">{p.name}</p>
+                                  <p className="text-[10px] text-slate-500 font-medium group-hover:text-slate-400 transition-colors">{p.email}</p>
+                                </td>
+                                <td className="px-8 py-5">
+                                  <span className={cn("inline-flex px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border", CLASS_COLOR[p.seat_class] || 'text-slate-500 border-slate-500/20')}>
+                                    {p.seat_class}
+                                  </span>
+                                </td>
+                                <td className="px-8 py-5">
+                                  {STATUS_CONFIG[p.status] ? (
+                                    <span className={cn("inline-flex px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border", STATUS_CONFIG[p.status].color)}>
+                                      {STATUS_CONFIG[p.status].label}
+                                    </span>
+                                  ) : (
+                                    <span className="text-slate-500 text-[10px] uppercase font-bold">{p.status}</span>
+                                  )}
+                                </td>
+                                <td className="px-8 py-5">
+                                  {p.paid ? (
+                                    <div className="flex items-center gap-2 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
+                                      <div className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                      Verified
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center gap-2 text-slate-600 text-[10px] font-black uppercase tracking-widest">
+                                      <div className="size-1.5 rounded-full bg-slate-700" />
+                                      Unlinked
+                                    </div>
+                                  )}
+                                </td>
+                                <td className="px-8 py-5 text-right font-mono text-[11px] text-slate-500">
+                                  {p.selected_at ? p.selected_at.slice(0, 16).replace('T', ' ') : '—'}
+                                </td>
+                              </motion.tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </GlassCard>
+                  )}
+                </>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }
+

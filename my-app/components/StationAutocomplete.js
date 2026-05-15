@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Train } from "lucide-react";
+import { Train, Search } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // All stations derived from the seeded IRCTC train catalog
 const ALL_STATIONS = [
@@ -17,7 +18,7 @@ const ALL_STATIONS = [
   "Lucknow",
 ];
 
-export default function StationAutocomplete({ id, name, value, onChange, placeholder, label }) {
+export default function StationAutocomplete({ id, name, value, onChange, placeholder, label, className }) {
   const [query, setQuery] = useState(value || "");
   const [suggestions, setSuggestions] = useState([]);
   const [open, setOpen] = useState(false);
@@ -90,9 +91,9 @@ export default function StationAutocomplete({ id, name, value, onChange, placeho
   };
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative w-full">
       {label && (
-        <label htmlFor={id} className="mb-2 block text-sm font-medium text-slate-700">
+        <label htmlFor={id} className="mb-2 block text-xs font-bold uppercase tracking-widest text-slate-500">
           {label}
         </label>
       )}
@@ -110,13 +111,16 @@ export default function StationAutocomplete({ id, name, value, onChange, placeho
         placeholder={placeholder}
         autoComplete="off"
         required
-        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/15"
+        className={cn(
+          "w-full h-16 rounded-2xl border border-white/5 bg-white/5 px-4 text-white outline-none transition-all focus:bg-white/10 focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10 placeholder:text-slate-500",
+          className
+        )}
       />
 
       {open && suggestions.length > 0 && (
         <ul
           role="listbox"
-          className="absolute z-50 mt-2 w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/60 animate-in fade-in slide-in-from-top-2 duration-150"
+          className="absolute z-50 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-900/90 p-1 backdrop-blur-2xl shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200"
         >
           {suggestions.map((station, idx) => {
             const matchStart = station.toLowerCase().indexOf(query.toLowerCase());
@@ -131,20 +135,22 @@ export default function StationAutocomplete({ id, name, value, onChange, placeho
                 aria-selected={highlighted === idx}
                 onMouseDown={() => selectStation(station)}
                 onMouseEnter={() => setHighlighted(idx)}
-                className={`flex cursor-pointer items-center gap-3 px-4 py-3 text-sm transition-colors ${
+                className={cn(
+                  "flex cursor-pointer items-center gap-3 rounded-xl px-4 py-3 text-sm transition-all",
                   highlighted === idx
-                    ? "bg-blue-50 text-blue-700"
-                    : "text-slate-700 hover:bg-slate-50"
-                }`}
+                    ? "bg-white/10 text-orange-500"
+                    : "text-slate-300 hover:bg-white/5 hover:text-white"
+                )}
               >
-                <Train
-                  className={`size-4 shrink-0 ${
-                    highlighted === idx ? "text-blue-500" : "text-slate-400"
-                  }`}
-                />
+                <div className={cn(
+                  "flex size-8 items-center justify-center rounded-lg transition-colors",
+                  highlighted === idx ? "bg-orange-500/20 text-orange-500" : "bg-white/5 text-slate-500"
+                )}>
+                  <Train className="size-4" />
+                </div>
                 <span>
                   {before}
-                  <span className="font-semibold text-blue-600">{match}</span>
+                  <span className="font-bold text-orange-500">{match}</span>
                   {after}
                 </span>
               </li>
@@ -155,3 +161,4 @@ export default function StationAutocomplete({ id, name, value, onChange, placeho
     </div>
   );
 }
+

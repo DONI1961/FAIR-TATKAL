@@ -4,209 +4,216 @@ import Link from "next/link"
 import { useSession, signIn, signOut } from "@/components/auth-provider"
 import { useState, useRef, useEffect } from "react"
 import { usePathname, useRouter } from "next/navigation"
-import { Avatar, Chip } from "@heroui/react"
-import { ArrowRight, House, Magnifier, Person, Ticket } from "@gravity-ui/icons"
-import { Button } from "./ui/button"
+import { Avatar } from "@heroui/react"
+import { motion, AnimatePresence } from "framer-motion"
+import { 
+  Search, 
+  Ticket, 
+  LayoutDashboard, 
+  Users, 
+  PlusCircle, 
+  LogOut, 
+  Menu, 
+  X, 
+  User,
+  ChevronDown
+} from "lucide-react"
+import { PremiumButton } from "./design-system/PremiumButton"
 import { cn } from "@/lib/utils"
 
 export default function Navbar() {
   const { data: session } = useSession()
-  const [toggle, setToggle] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
   const dropdownRef = useRef(null)
   const router = useRouter()
   const pathname = usePathname()
 
-  const handleClick = () => {
-    setToggle((prev) => !prev)
-  }
-
-  const handleTicket = () => {
-    setToggle(false)
-    router.push("/my_ticket")
-  }
-
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setToggle(false)
+        setIsProfileOpen(false)
       }
     }
-
     document.addEventListener("mousedown", handleOutsideClick)
     return () => document.removeEventListener("mousedown", handleOutsideClick)
   }, [])
 
-  const links = [
-    { href: "/search", label: "Search", icon: Magnifier },
-    { href: "/my_ticket", label: "My Tickets", icon: Ticket },
+  const userLinks = [
+    { href: "/search", label: "Find Trains", icon: Search },
+    { href: "/my_ticket", label: "My Journeys", icon: Ticket },
   ]
 
   const adminLinks = [
-    { href: "/addtrain", label: "Add Train", icon: House },
-    { href: "/result", label: "Publish Results", icon: ArrowRight },
-    { href: "/passengers", label: "Passengers", icon: Person },
+    { href: "/addtrain", label: "Add Train", icon: PlusCircle },
+    { href: "/result", label: "Lottery Engine", icon: LayoutDashboard },
+    { href: "/passengers", label: "Passengers", icon: Users },
   ]
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/60 bg-white/75 backdrop-blur-xl">
-      <div className="app-shell flex min-h-18 items-center justify-between gap-4 py-4">
-        <Link href={session ? "/search" : "/"} className="flex items-center gap-4">
-          <div className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-500 to-amber-400 text-white shadow-lg shadow-blue-500/20">
-            <Ticket className="size-5" />
+    <nav className="glass-nav border-white/5 bg-slate-950/40 backdrop-blur-2xl">
+      <div className="app-shell flex h-20 items-center justify-between">
+        {/* Logo */}
+        <Link href={session ? "/search" : "/"} className="group flex items-center gap-3">
+          <div className="relative flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 shadow-lg shadow-orange-500/20 group-hover:shadow-orange-500/40 transition-all">
+            <Ticket className="size-5 text-white" />
+            <div className="absolute -inset-1 rounded-xl bg-orange-500/20 blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
-              Smart Rail
-            </p>
+          <div className="flex flex-col leading-none">
+            <span className="text-lg font-bold tracking-tight text-white">Smart Rail</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-500/80">Fair Tatkal</span>
           </div>
         </Link>
 
-        {session ? (
-            <nav className="hidden items-center gap-2 md:flex">
-              {links.map(({ href, label, icon: Icon }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={cn(
-                    "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all text-slate-600 hover:bg-slate-100 hover:text-slate-900",
-                    pathname === href && "bg-primary text-primary-foreground shadow-sm"
-                  )}
-                >
-                  <Icon className="size-4" />
-                  {label}
-                </Link>
-              ))}
-              {session.user.role === "admin" &&
-                adminLinks.map(({ href, label, icon: Icon }) => (
+        {/* Desktop Navigation */}
+        {session && (
+          <div className="hidden items-center gap-1 md:flex">
+            {userLinks.map(({ href, label, icon: Icon }) => (
+              <Link
+                key={href}
+                href={href}
+                className={cn(
+                  "relative flex items-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition-all hover:bg-white/5",
+                  pathname === href ? "text-orange-500" : "text-slate-300 hover:text-white"
+                )}
+              >
+                <Icon className="size-4" />
+                {label}
+                {pathname === href && (
+                  <motion.div
+                    layoutId="nav-active"
+                    className="absolute inset-0 rounded-full bg-orange-500/10 border border-orange-500/20"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+              </Link>
+            ))}
+
+            {session.user.role === "admin" && (
+              <div className="ml-4 flex items-center gap-1 border-l border-white/10 pl-4">
+                {adminLinks.map(({ href, label, icon: Icon }) => (
                   <Link
                     key={href}
                     href={href}
                     className={cn(
-                      "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition-all border border-indigo-200 bg-indigo-50/50 text-indigo-700 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 shadow-sm hover:shadow-indigo-200/50",
-                      pathname === href && "bg-indigo-600 text-white shadow-md border-indigo-600"
+                      "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition-all hover:bg-indigo-500/10",
+                      pathname === href ? "text-indigo-400" : "text-indigo-300/70 hover:text-indigo-300"
                     )}
                   >
                     <Icon className="size-4" />
                     {label}
                   </Link>
                 ))}
-            </nav>
-          ) : (
-            <Chip
-              color="warning"
-              variant="flat"
-              className="hidden border border-amber-200/70 bg-amber-50/80 px-3 py-1 text-amber-900 md:inline-flex"
-            >
-              Sign in to search and book
-            </Chip>
-          )}
+              </div>
+            )}
+          </div>
+        )}
 
+        {/* Profile / Login */}
+        <div className="flex items-center gap-4">
           {!session ? (
-            <Button
+            <PremiumButton 
               onClick={() => signIn("google")}
-              className="rounded-full bg-slate-950 px-5 text-white hover:bg-slate-800"
+              className="h-10 px-6 text-sm"
             >
-              <ArrowRight className="size-4" />
-              Sign in
-            </Button>
+              Sign In
+            </PremiumButton>
           ) : (
-            <div className="relative flex items-center gap-4" ref={dropdownRef}>
+            <div className="relative" ref={dropdownRef}>
               <button
-                type="button"
-                className="flex items-center cursor-pointer gap-3 rounded-full border border-slate-200 bg-white/80 px-2 py-2 shadow-sm transition hover:border-slate-300 hover:bg-white"
-                onClick={handleClick}
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-1.5 pr-4 transition-all hover:bg-white/10"
               >
-                <Avatar className="cursor-pointer">
-                  <Avatar.Image alt={session.user.name} src={session.user.image} />
-                  <Avatar.Fallback>
-                    <Person />
+                <Avatar className="size-8 rounded-xl ring-2 ring-orange-500/20">
+                  <Avatar.Image src={session.user.image} alt={session.user.name} />
+                  <Avatar.Fallback className="bg-orange-500 text-white">
+                    <User className="size-4" />
                   </Avatar.Fallback>
                 </Avatar>
-                <div className="hidden text-left sm:block">
-                  <p className="max-w-32 truncate text-sm font-semibold text-slate-900">
-                    {session.user.name}
-                  </p>
-                  <div className="flex items-center gap-1">
-                    {session.user.role === "admin" && (
-                      <span className="rounded-full bg-indigo-100 px-1.5 py-0.5 text-[8px] font-black uppercase text-indigo-700">
-                        Admin
-                      </span>
-                    )}
-                    <p className="max-w-32 truncate text-xs text-muted-foreground">
-                      {session.user.email}
-                    </p>
-                  </div>
+                <div className="hidden text-left lg:block">
+                  <p className="text-xs font-bold text-white leading-tight">{session.user.name}</p>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-wider">{session.user.role}</p>
                 </div>
+                <ChevronDown className={cn("size-4 text-slate-400 transition-transform", isProfileOpen && "rotate-180")} />
               </button>
 
-              {toggle && (
-                <div className="absolute right-0  top-full mt-3 w-64 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-slate-200/70">
-                  <div className="border-b border-slate-100 bg-slate-50/70 px-5 py-4">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold text-slate-900">{session.user.name}</p>
-                      {session.user.role === "admin" && (
-                        <span className="rounded-full bg-indigo-100 px-1.5 py-0.5 text-[8px] font-black uppercase text-indigo-700">
-                          Admin
-                        </span>
-                      )}
+              <AnimatePresence>
+                {isProfileOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-0 mt-3 w-64 overflow-hidden rounded-3xl border border-white/10 bg-slate-900/90 p-2 backdrop-blur-2xl shadow-2xl"
+                  >
+                    <div className="px-4 py-3 border-b border-white/5">
+                      <p className="text-sm font-bold text-white">{session.user.name}</p>
+                      <p className="text-xs text-slate-400 truncate">{session.user.email}</p>
                     </div>
-                    <p className="text-xs text-muted-foreground">{session.user.email}</p>
-                  </div>
-                  <div className="p-2">
-                    <button
-                      className="flex w-full cursor-pointer items-center gap-3 rounded-2xl px-3 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
-                      onClick={handleTicket}
-                    >
-                      <Ticket className="size-4" />
-                      My Tickets
-                    </button>
-                    {session.user.role === "admin" && (
-                      <>
-                        <button
-                          className="flex w-full cursor-pointer items-center gap-3 rounded-2xl px-3 py-3 text-left text-sm font-medium text-indigo-600 transition hover:bg-slate-100"
-                          onClick={() => {
-                            setToggle(false)
-                            router.push("/addtrain")
-                          }}
-                        >
-                          <House className="size-4" />
-                          Add Train
-                        </button>
-                        <button
-                          className="flex w-full cursor-pointer items-center gap-3 rounded-2xl px-3 py-3 text-left text-sm font-medium text-indigo-600 transition hover:bg-slate-100"
-                          onClick={() => {
-                            setToggle(false)
-                            router.push("/result")
-                          }}
-                        >
-                          <ArrowRight className="size-4" />
-                          Publish Results
-                        </button>
-                        <button
-                          className="flex w-full cursor-pointer items-center gap-3 rounded-2xl px-3 py-3 text-left text-sm font-medium text-indigo-600 transition hover:bg-slate-100"
-                          onClick={() => {
-                            setToggle(false)
-                            router.push("/passengers")
-                          }}
-                        >
-                          <Person className="size-4" />
-                          Passenger List
-                        </button>
-                      </>
-                    )}
-                    <button
-                      className="mt-1 flex cursor-pointer w-full items-center gap-3 rounded-2xl px-3 py-3 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
-                      onClick={() => signOut()}
-                    >
-                      <ArrowRight className="size-4" />
-                      Sign out
-                    </button>
-                  </div>
-                </div>
-              )}
+                    
+                    <div className="mt-2 space-y-1">
+                      <button
+                        onClick={() => { router.push("/my_ticket"); setIsProfileOpen(false); }}
+                        className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-slate-300 hover:bg-white/5 hover:text-white transition-colors"
+                      >
+                        <Ticket className="size-4 text-orange-500" />
+                        My Journeys
+                      </button>
+                      
+                      <button
+                        onClick={() => signOut()}
+                        className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors"
+                      >
+                        <LogOut className="size-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           )}
+
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="flex size-10 items-center justify-center rounded-xl bg-white/5 md:hidden"
+          >
+            {isMenuOpen ? <X className="text-white" /> : <Menu className="text-white" />}
+          </button>
+        </div>
       </div>
-    </header>
+
+      {/* Mobile Navigation */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden bg-slate-950/90 border-t border-white/5 backdrop-blur-3xl md:hidden"
+          >
+            <div className="app-shell py-6 space-y-6">
+              <div className="space-y-2">
+                {[...userLinks, ...(session?.user.role === 'admin' ? adminLinks : [])].map(({ href, label, icon: Icon }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={cn(
+                      "flex items-center gap-4 rounded-2xl px-4 py-4 text-lg font-semibold",
+                      pathname === href ? "bg-orange-500/10 text-orange-500" : "text-slate-300"
+                    )}
+                  >
+                    <Icon className="size-6" />
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
   )
 }
+

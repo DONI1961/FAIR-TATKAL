@@ -1,81 +1,134 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Chip } from "@heroui/react"
-import { ArrowRight, CircleCheck, Rocket, Ticket } from "@gravity-ui/icons"
+import { motion } from "framer-motion"
+import { ArrowRight, Ticket, ShieldCheck, Sparkles, Zap } from "lucide-react"
 import { signIn, useSession } from "@/components/auth-provider"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { GlassCard } from "@/components/design-system/GlassCard"
+import { PremiumButton } from "@/components/design-system/PremiumButton"
+import { TrainAnimation } from "@/components/design-system/TrainAnimation"
 
 export default function Page() {
   const { data: session } = useSession()
   const router = useRouter()
+
   useEffect(() => {
     if (session) router.replace("/search")
-  }, [session])
+  }, [session, router])
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+  }
 
   return (
-    <div className="app-shell flex min-h-[calc(100vh-5rem)] items-center py-8">
-      <div className="grid w-full gap-6 lg:grid-cols-[1.2fr_0.9fr]">
-        <section className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-900 p-8 text-white shadow-2xl shadow-blue-950/20 sm:p-10">
-          <div className="absolute -right-16 top-0 size-56 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute bottom-0 left-0 h-40 w-40 rounded-full bg-amber-300/20 blur-3xl" />
-          <Chip className="border border-white/15 bg-white/10 px-3 py-1 text-white" variant="flat">
-            New travel dashboard
-          </Chip>
-          <div className="mt-6 max-w-xl space-y-5">
-            <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-              Book smarter journeys with a cleaner, faster rail experience.
-            </h1>
-            <p className="text-base leading-7 text-blue-100/85 sm:text-lg">
-              Search routes, join lotteries, track ticket status, and complete payment from one polished workspace.
-            </p>
-          </div>
-          <div className="mt-8 flex flex-wrap gap-3 text-sm">
-            <div className="rounded-full border border-white/10 bg-white/10 px-4 py-2">Live search flow</div>
-            <div className="rounded-full border border-white/10 bg-white/10 px-4 py-2">Lottery status tracking</div>
-            <div className="rounded-full border border-white/10 bg-white/10 px-4 py-2">Simple ticket management</div>
-          </div>
-        </section>
-
-        <div className="rounded-[2rem] border border-slate-200/80 bg-white/90 px-8 py-10 shadow-xl shadow-slate-200/60 backdrop-blur">
-          <div className="mb-8 text-center">
-            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-500 text-white shadow-lg shadow-blue-500/30">
-              <Ticket className="size-8" />
-            </div>
-            <p className="mt-5 text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
-              Welcome back
-            </p>
-            <h2 className="mt-3 text-3xl font-semibold text-slate-900">
-              Sign in to continue
-            </h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Use your Google account to access search, booking, and ticket updates.
-            </p>
-          </div>
-
-          <div className="space-y-3 rounded-3xl bg-slate-50 p-4">
-            <div className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm">
-              <Rocket className="size-5 text-blue-600" />
-              <span className="text-sm font-medium text-slate-700">Fast entry into train search and booking</span>
-            </div>
-            <div className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm">
-              <CircleCheck className="size-5 text-emerald-600" />
-              <span className="text-sm font-medium text-slate-700">Track selection and payment status clearly</span>
-            </div>
-          </div>
-
-          <div className="mt-8 flex flex-col items-center gap-4">
-            <Button
-              onClick={() => signIn("google")}
-              className="h-12 w-full max-w-xs rounded-full bg-slate-950 px-6 text-base text-white hover:bg-slate-800"
-            >
-              Continue with Google
-              <ArrowRight className="size-4" />
-            </Button>
-          </div>
-        </div>
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Cinematic Background Layer */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(30,58,138,0.2)_0%,rgba(5,11,24,1)_100%)]" />
+        <div className="absolute inset-0 hero-gradient opacity-60" />
       </div>
+
+      <main className="relative z-10 mx-auto max-w-7xl px-4 pt-20 sm:px-6 lg:px-8">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid gap-12 lg:grid-cols-2 lg:items-center"
+        >
+          {/* Left Column: Hero Content */}
+          <div className="space-y-8">
+            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-1.5 backdrop-blur-md">
+              <Sparkles className="size-4 text-orange-500" />
+              <span className="text-xs font-bold uppercase tracking-wider text-orange-500">The Future of Rail Travel</span>
+            </motion.div>
+
+            <motion.h1 variants={itemVariants} className="text-5xl font-extrabold tracking-tight text-white sm:text-7xl">
+              Experience the <br />
+              <span className="bg-gradient-to-r from-orange-400 to-amber-600 bg-clip-text text-transparent">Fair Tatkal</span> Era.
+            </motion.h1>
+
+            <motion.p variants={itemVariants} className="max-w-lg text-lg leading-relaxed text-slate-300">
+              No more stressful races. No more bot advantages. Just a fair, transparent, and cinematic railway booking experience powered by weighted lottery intelligence.
+            </motion.p>
+
+            <motion.div variants={itemVariants} className="flex flex-wrap gap-4">
+              <div className="flex items-center gap-2 text-sm text-slate-400">
+                <ShieldCheck className="size-5 text-emerald-500" />
+                Aadhaar Verified
+              </div>
+              <div className="flex items-center gap-2 text-sm text-slate-400">
+                <Zap className="size-5 text-blue-500" />
+                2G-Optimized
+              </div>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="relative mt-8">
+              <TrainAnimation />
+            </motion.div>
+          </div>
+
+          {/* Right Column: Sign In Card */}
+          <motion.div variants={itemVariants} className="flex justify-center lg:justify-end">
+            <GlassCard className="w-full max-w-md border-white/10 bg-white/5 p-10 text-center">
+              <div className="mb-8">
+                <div className="mx-auto flex size-20 items-center justify-center rounded-3xl bg-gradient-to-br from-orange-500 to-amber-600 shadow-lg shadow-orange-500/40">
+                  <Ticket className="size-10 text-white" />
+                </div>
+                <h2 className="mt-6 text-3xl font-bold text-white">Board the System</h2>
+                <p className="mt-2 text-slate-400">Sign in with Google to start your fair journey.</p>
+              </div>
+
+              <div className="space-y-4">
+                <PremiumButton 
+                  onClick={() => signIn("google")}
+                  className="w-full h-14 text-lg"
+                >
+                  Continue with Google
+                  <ArrowRight className="size-5" />
+                </PremiumButton>
+
+                <p className="text-xs text-slate-500">
+                  By continuing, you agree to our terms of service and fairness policy.
+                </p>
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="mt-10 grid grid-cols-3 gap-4 border-t border-white/10 pt-8">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-white">100%</div>
+                  <div className="text-[10px] uppercase tracking-wider text-slate-500">Fairness</div>
+                </div>
+                <div className="text-center border-x border-white/10">
+                  <div className="text-xl font-bold text-white">0s</div>
+                  <div className="text-[10px] uppercase tracking-wider text-slate-500">Latency</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-white">AI</div>
+                  <div className="text-[10px] uppercase tracking-wider text-slate-500">Anti-Bot</div>
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
+        </motion.div>
+
+        {/* Floating Ambient Elements */}
+        <div className="absolute -bottom-40 -left-40 size-96 rounded-full bg-blue-600/10 blur-[120px]" />
+        <div className="absolute top-1/4 -right-20 size-80 rounded-full bg-orange-600/5 blur-[100px]" />
+      </main>
     </div>
   )
 }
+

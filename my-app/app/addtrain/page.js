@@ -1,6 +1,8 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "@/components/auth-provider";
 import { format } from "date-fns";
 import { 
@@ -14,60 +16,58 @@ import {
   Ticket, 
   IndianRupee, 
   Map, 
-  ArrowRight
+  ArrowRight,
+  ShieldAlert,
+  Zap,
+  ChevronRight,
+  Info
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { GlassCard } from "@/components/design-system/GlassCard";
+import { PremiumButton } from "@/components/design-system/PremiumButton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
+const FormSectionHeader = ({ icon: Icon, title, desc, color = "text-blue-500" }) => (
+  <div className="flex items-center gap-4 mb-8">
+    <div className={cn("size-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center", color)}>
+      <Icon className="size-6" />
+    </div>
+    <div>
+      <h3 className="text-xl font-black text-white tracking-tight">{title}</h3>
+      <p className="text-xs font-medium text-slate-500 uppercase tracking-widest">{desc}</p>
+    </div>
+  </div>
+);
 
 const DatePickerField = ({ label, name, value, onChange }) => (
-  <div className="flex flex-col gap-2 space-y-1">
-    <Label className="text-sm font-semibold text-slate-700">{label}</Label>
+  <div className="space-y-2">
+    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</Label>
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          variant={"outline"}
-          className={cn(
-            "justify-start text-left font-medium w-full rounded-xl transition-all h-12 shadow-sm border-slate-200 bg-white hover:bg-slate-50",
-            !value && "text-muted-foreground"
-          )}
-        >
-          <CalendarIcon className="mr-3 h-5 w-5 text-blue-500" />
-          {value ? format(new Date(value), "PPP") : <span>Pick a date</span>}
-        </Button>
+        <button type="button" className="w-full h-14 rounded-2xl bg-white/5 border border-white/10 px-4 flex items-center gap-3 text-white font-bold hover:bg-white/10 transition-all text-left">
+          <CalendarIcon className="size-4 text-blue-500" />
+          <span className="text-sm">
+            {value ? format(new Date(value), "PPP") : "Select Date"}
+          </span>
+        </button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 rounded-xl overflow-hidden shadow-2xl border-slate-100" align="start">
+      <PopoverContent className="w-auto p-0 rounded-2xl overflow-hidden border-white/10 bg-slate-900 backdrop-blur-3xl" align="start">
         <Calendar
           mode="single"
           selected={value ? new Date(value) : undefined}
           disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
           onSelect={(date) => onChange(name, date)}
           initialFocus
+          className="bg-transparent text-white"
         />
       </PopoverContent>
     </Popover>
@@ -75,25 +75,28 @@ const DatePickerField = ({ label, name, value, onChange }) => (
 );
 
 const TimePickerField = ({ label, name, value, onChange, required = false }) => (
-  <div className="flex flex-col gap-2 space-y-1">
-    <Label htmlFor={name} className="text-sm font-semibold text-slate-700">{label}</Label>
-    <Input
-      type="time"
-      id={name}
-      name={name}
-      value={value}
-      onChange={onChange}
-      required={required}
-      className="h-12 w-full rounded-xl border-slate-200 bg-white font-medium shadow-sm transition-all focus-visible:ring-2 focus-visible:ring-blue-500 text-slate-800"
-    />
+  <div className="space-y-2">
+    <Label htmlFor={name} className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</Label>
+    <div className="relative">
+      <Clock className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-blue-500 pointer-events-none" />
+      <Input
+        type="time"
+        id={name}
+        name={name}
+        value={value}
+        onChange={onChange}
+        required={required}
+        className="h-14 w-full pl-12 rounded-2xl border-white/10 bg-white/5 font-bold text-white focus:ring-blue-500/20"
+      />
+    </div>
   </div>
 );
 
 const InputField = ({ label, name, value, onChange, placeholder, icon: Icon, type = "text" }) => (
-  <div className="flex flex-col gap-2 space-y-1">
-    <Label htmlFor={name} className="text-sm font-semibold text-slate-700">{label}</Label>
-    <div className="relative group">
-      {Icon && <Icon className="absolute left-3.5 top-3.5 h-5 w-5 text-blue-500 transition-colors pointer-events-none" />}
+  <div className="space-y-2">
+    <Label htmlFor={name} className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</Label>
+    <div className="relative">
+      {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-blue-500 pointer-events-none" />}
       <Input
         type={type}
         id={name}
@@ -103,8 +106,8 @@ const InputField = ({ label, name, value, onChange, placeholder, icon: Icon, typ
         placeholder={placeholder}
         required
         className={cn(
-          "h-12 rounded-xl border-slate-200 bg-white font-medium shadow-sm transition-all focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent text-slate-800",
-          Icon ? "pl-11" : "pl-4"
+          "h-14 rounded-2xl border-white/10 bg-white/5 font-bold text-white focus:ring-blue-500/20 placeholder:text-slate-600",
+          Icon ? "pl-12" : "px-6"
         )}
       />
     </div>
@@ -114,16 +117,14 @@ const InputField = ({ label, name, value, onChange, placeholder, icon: Icon, typ
 export default function AddTrain() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/");
-    } else if (status === "authenticated" && session?.user?.role !== "admin") {
+    if (status === "unauthenticated" || (status === "authenticated" && session?.user?.role !== "admin")) {
       router.push("/");
     }
   }, [session, status, router]);
 
-  const formatTime = (t) => `${t}:00`;  
   const [train, setTrain] = useState({
     train_number: "",
     train_name: "",
@@ -146,344 +147,215 @@ export default function AddTrain() {
     }
   });
 
-  const [notification, setNotification] = useState(null);
-
-  const validateTakkal = () => {
-    return true
-    if (!train.takkal) return true;
-
-    const errors = [];
-    const now = new Date();
-    const twoHoursFromNow = new Date(now.getTime() + 2 * 60 * 60 * 1000);
-
-    // Check opening_time > now + 2 hours
-    if (train.opening_date && train.opening_time) {
-      const openingDateTime = new Date(`${train.opening_date}T${train.opening_time}`);
-      if (openingDateTime <= twoHoursFromNow) {
-        errors.push("Opening time must be at least 2 hours from now");
-      }
-    } else if (train.takkal && (!train.opening_date || !train.opening_time)) {
-      errors.push("Opening date and time are required for Takkal");
-    }
-
-    // Check opening_date < closing_date
-    if (train.opening_date <= train.closing_date) {
-      if (train.opening_date >= train.closing_date) {
-        errors.push("Opening date must be before closing date");
-      }
-    } else if (train.takkal && (!train.closing_date || !train.opening_date)) {
-      errors.push("Closing date is required for Takkal");
-    }
-
-    // Check opening_time < closing_time (only if same date)
-    if (train.opening_date === train.closing_date && train.opening_time && train.closing_time) {
-      if (train.opening_time >= train.closing_time) {
-        errors.push("Opening time must be before closing time");
-      }
-    } else if (train.takkal && (!train.closing_time || !train.opening_time)) {
-      errors.push("Closing time is required for Takkal");
-    }
-
-    if (errors.length > 0) {
-      setNotification({
-        type: "error",
-        title: "Validation Error",
-        message: errors.join(" | ")
-      });
-      return false;
-    }
-
-    return true;
-  };
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setTrain((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value
-    }));
-    if (notification) setNotification(null);
+    setTrain(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
   };
 
   const handleDateChange = (name, date) => {
-    setTrain((prev) => ({
-      ...prev,
-      [name]: date ? format(date, "yyyy-MM-dd") : ""
-    }));
-    if (notification) setNotification(null);
-  };
-
-  const handleCheckboxChange = (name, checked) => {
-    setTrain((prev) => ({
-      ...prev,
-      [name]: checked
-    }));
-    if (notification) setNotification(null);
+    setTrain(prev => ({ ...prev, [name]: date ? format(date, "yyyy-MM-dd") : "" }));
   };
 
   const handleClassField = (className, field, value) => {
     if (isNaN(value)) return;
-    setTrain((prev) => ({
+    setTrain(prev => ({
       ...prev,
       classes: {
         ...prev.classes,
-        [className]: {
-          ...prev.classes[className],
-          [field]:  Number(value) 
-        }
+        [className]: { ...prev.classes[className], [field]: Number(value) }
       }
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateTakkal()) {
-      return;
-    }
-
-    const url = process.env.NEXT_PUBLIC_BACKEND_URL+'/add_train'
-    
-    // Transform frontend format to backend schema
     const payload = {
+      ...train,
       train_number: Number(train.train_number),
-      train_name: train.train_name,
-      from_station: train.from_station,
-      to_station: train.to_station,
-      departure_date: train.departure_date,
-      departure_time: train.departure_time,
-      arrival_date: train.arrival_date,
-      arrival_time: train.arrival_time,
       duration: Number(train.duration),
-      takkal: train.takkal,
-      opening_date: train.opening_date,
-      opening_time: formatTime(train.opening_time),
-      closing_date: train.closing_date,
-      closing_time: formatTime(train.closing_time),
+      opening_time: train.opening_time ? `${train.opening_time}:00` : "",
+      closing_time: train.closing_time ? `${train.closing_time}:00` : "",
       seats: [train.classes.economy.seats, train.classes.business.seats, train.classes.first.seats],
       fare: [train.classes.economy.fare, train.classes.business.fare, train.classes.first.fare]
     }
 
     try {
-      const response = await fetch(url,{
+      const res = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + '/add_train', {
         method: "POST",
-        headers:{
-          'Content-Type':'application/json',
+        headers: {
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${session?.accessToken}`,
         },
-        body:JSON.stringify(payload)
+        body: JSON.stringify(payload)
       });
-      console.log(response);
-      setNotification({
-        type: "success",
-        title: "Success",
-        message: "Train added successfully!"
-      });
-      setTimeout(() => setNotification(null), 3000);
+      if (res.ok) {
+        setNotification({ type: "success", title: "Deployment Successful", message: "Train route active in neural network." });
+        setTimeout(() => setNotification(null), 3000);
+      }
     } catch (error) {
-      setNotification({
-        type: "error",
-        title: "Submission Error",
-        message: "Failed to add train. Check connection."
-      });
+      setNotification({ type: "error", title: "Deployment Failed", message: "Connection error. Re-sync required." });
     }
   };
 
+  if (status !== "authenticated") return null;
+
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 -left-4 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-      <div className="absolute top-0 -right-4 w-72 h-72 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-      <div className="absolute -bottom-8 left-20 w-72 h-72 bg-sky-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-
-      <div className="max-w-5xl mx-auto relative z-10">
-        <div className="mb-10 text-center space-y-3">
-          <div className="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-xl shadow-blue-500/10 mb-4 border border-blue-100">
-            <Train className="w-8 h-8 text-blue-600" />
+    <div className="w-full max-w-5xl mx-auto space-y-12 pb-20 pt-8">
+      {/* Header */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col md:flex-row items-center justify-between gap-8 mb-16"
+      >
+        <div className="text-center md:text-left">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">
+            Admin Command Center
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Add New Route</h1>
-          <p className="text-lg text-slate-500 max-w-2xl mx-auto font-medium">Configure train details, schedules, and class seating visually</p>
+          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter">
+            Fleet <span className="text-orange-500">Expansion</span>
+          </h1>
+          <p className="mt-4 text-slate-400 font-medium max-w-md">
+            Deploy new routes, configure seating availability, and manage allocation windows with surgical precision.
+          </p>
         </div>
 
+        <GlassCard className="py-6 px-8 flex items-center gap-4 border-orange-500/10 bg-orange-500/5">
+           <ShieldAlert className="size-8 text-orange-500" />
+           <div>
+             <p className="text-[10px] font-black uppercase tracking-widest text-orange-500 mb-1">Authorization</p>
+             <p className="text-lg font-black text-white uppercase tracking-tighter">Level 4 Admin</p>
+           </div>
+        </GlassCard>
+      </motion.div>
+
+      {/* Notifications */}
+      <AnimatePresence>
         {notification && (
-          <Alert className={cn(
-            "mb-8 border-none text-white shadow-lg animate-in fade-in slide-in-from-top-4",
-            notification.type === "error" ? "bg-red-500" : "bg-emerald-500"
-          )}>
-            {notification.type === "error" ? <AlertCircle className="h-5 w-5 text-white" /> : <CheckCircle2 className="h-5 w-5 text-white" />}
-            <AlertTitle className="font-bold text-lg">{notification.title}</AlertTitle>
-            <AlertDescription className="text-white/90 font-medium">
-              {notification.message}
-            </AlertDescription>
-          </Alert>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Identity Section */}
-          <Card className="border-0 shadow-xl shadow-slate-200/40 bg-white/80 backdrop-blur-xl ring-1 ring-slate-200 overflow-hidden rounded-2xl">
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50/50 px-8 py-5 border-b border-slate-100 flex items-center gap-3">
-              <div className="bg-blue-600 p-2 rounded-lg text-white shadow-md shadow-blue-600/20">
-                <Ticket className="w-5 h-5" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800">Train Identity</h3>
-            </div>
-            <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-              <InputField label="Train Number" name="train_number" value={train.train_number} onChange={handleChange} icon={Ticket} placeholder="e.g. 12045" />
-              <InputField label="Train Name" name="train_name" value={train.train_name} onChange={handleChange} icon={Train} placeholder="e.g. Shatabdi Express" />
-            </CardContent>
-          </Card>
-
-          {/* Route Section */}
-          <Card className="border-0 shadow-xl shadow-slate-200/40 bg-white/80 backdrop-blur-xl ring-1 ring-slate-200 overflow-hidden rounded-2xl">
-            <div className="bg-gradient-to-r from-slate-50 to-slate-100/50 px-8 py-5 border-b border-slate-100 flex items-center gap-3">
-              <div className="bg-indigo-600 p-2 rounded-lg text-white shadow-md shadow-indigo-600/20">
-                <Map className="w-5 h-5" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800">Route & Stations</h3>
-            </div>
-            <CardContent className="p-8 flex flex-col md:flex-row gap-8 items-center">
-              <div className="w-full">
-                <InputField label="From Station" name="from_station" value={train.from_station} onChange={handleChange} icon={MapPin} placeholder="Origin Station" />
-              </div>
-              <div className="hidden md:flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-slate-100 mt-6 border border-slate-200 text-slate-400">
-                <ArrowRight className="w-6 h-6" />
-              </div>
-              <div className="w-full">
-                <InputField label="To Station" name="to_station" value={train.to_station} onChange={handleChange} icon={MapPin} placeholder="Destination Station" />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Schedule Section */}
-          <Card className="border-0 shadow-xl shadow-slate-200/40 bg-white/80 backdrop-blur-xl ring-1 ring-slate-200 overflow-hidden rounded-2xl">
-            <div className="bg-gradient-to-r from-emerald-50 to-teal-50/50 px-8 py-5 border-b border-slate-100 flex items-center gap-3">
-              <div className="bg-emerald-600 p-2 rounded-lg text-white shadow-md shadow-emerald-600/20">
-                <CalendarIcon className="w-5 h-5" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800">Schedule Details</h3>
-            </div>
-            <CardContent className="p-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-                <DatePickerField label="Departure Date" name="departure_date" value={train.departure_date} onChange={handleDateChange} />
-                <TimePickerField label="Departure Time" name="departure_time" value={train.departure_time} onChange={handleChange} required />
-                <DatePickerField label="Arrival Date" name="arrival_date" value={train.arrival_date} onChange={handleDateChange} />
-                <TimePickerField label="Arrival Time" name="arrival_time" value={train.arrival_time} onChange={handleChange} required />
-              </div>
-              <div className="max-w-sm">
-                <InputField label="Total Duration" name="duration" value={train.duration} onChange={handleChange} icon={Timer} placeholder="e.g., 5h 30m" />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Takkal Section */}
-          <Card className={cn(
-            "border-0 shadow-xl overflow-hidden rounded-2xl transition-all duration-300 ring-1",
-            train.takkal ? "bg-blue-50/50 ring-blue-200 shadow-blue-200/40" : "bg-white/80 ring-slate-200 shadow-slate-200/40"
-          )}>
-            <div className={cn(
-              "px-8 py-5 border-b flex items-center gap-4 transition-colors",
-              train.takkal ? "bg-blue-100/50 border-blue-100" : "bg-gradient-to-r from-orange-50 to-amber-50/50 border-slate-100"
-            )}>
-              <div className={cn(
-                "p-2 rounded-lg text-white shadow-md transition-colors",
-                train.takkal ? "bg-blue-600 shadow-blue-600/20" : "bg-orange-500 shadow-orange-500/20"
-              )}>
-                <AlertCircle className="w-5 h-5" />
-              </div>
-              <div className="flex-1 flex items-center justify-between">
-                <h3 className="text-xl font-bold text-slate-800">Takkal Configuration</h3>
-                <div className="flex items-center space-x-3 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
-                  <Checkbox 
-                    id="takkal" 
-                    checked={train.takkal} 
-                    onCheckedChange={(c) => handleCheckboxChange("takkal", c)}
-                    className="h-5 w-5 rounded-md data-[state=checked]:bg-blue-600 data-[state=checked]:text-white border-slate-300"
-                  />
-                  <Label htmlFor="takkal" className="text-sm font-bold text-slate-700 cursor-pointer select-none">Enable Takkal Quota</Label>
-                </div>
-              </div>
-            </div>
-            
-            {train.takkal && (
-              <CardContent className="p-8 animate-in slide-in-from-top-4 fade-in duration-300">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 bg-white p-6 rounded-2xl border border-blue-100 shadow-sm">
-                  <DatePickerField label="Opening Date" name="opening_date" value={train.opening_date} onChange={handleDateChange} />
-                  <TimePickerField label="Opening Time" name="opening_time" value={train.opening_time} onChange={handleChange} />
-                  <DatePickerField label="Closing Date" name="closing_date" value={train.closing_date} onChange={handleDateChange} />
-                  <TimePickerField label="Closing Time" name="closing_time" value={train.closing_time} onChange={handleChange} />
-                </div>
-              </CardContent>
-            )}
-          </Card>
-
-          {/* Classes Section */}
-          <Card className="border-0 shadow-xl shadow-slate-200/40 bg-white/80 backdrop-blur-xl ring-1 ring-slate-200 overflow-hidden rounded-2xl">
-            <div className="bg-slate-50 px-8 py-5 border-b border-slate-100 flex items-center gap-3">
-              <div className="bg-slate-800 p-2 rounded-lg text-white shadow-md">
-                <IndianRupee className="w-5 h-5" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800">Class Configurations</h3>
-            </div>
-            <CardContent className="p-8">
-              <div className="space-y-4">
-                <div className="grid grid-cols-[1.5fr_1fr_1fr] gap-4 pb-4 border-b border-slate-100 text-sm font-semibold text-slate-500 uppercase tracking-wider">
-                  <div>Class Type</div>
-                  <div>Available Seats</div>
-                  <div>Fare per Seat (₹)</div>
-                </div>
-                {Object.entries(train.classes).map(([classKey, classInfo]) => (
-                  <div key={classKey} className="grid grid-cols-[1.5fr_1fr_1fr] gap-4 items-center">
-                    <div className="font-bold text-slate-700 capitalize flex items-center gap-2 text-lg">
-                        {classKey}
-                    </div>
-                    <div>
-                      <Input
-                        id={`${classKey}-seats`}
-                        value={classInfo.seats}
-                        onChange={(e) => handleClassField(classKey, "seats", e.target.value)}
-                        className="h-11 rounded-lg border-slate-200 bg-white shadow-sm focus-visible:ring-2 focus-visible:ring-blue-500 font-medium"
-                        placeholder="0"
-                      />
-                    </div>
-                    <div className="relative">
-                      <IndianRupee className="absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
-                      <Input
-                        id={`${classKey}-fare`}
-                        value={classInfo.fare}
-                        onChange={(e) => handleClassField(classKey, "fare", e.target.value)}
-                        className="pl-9 h-11 rounded-lg border-slate-200 bg-white shadow-sm focus-visible:ring-2 focus-visible:ring-blue-500 font-medium"
-                        placeholder="0"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Button
-            type="submit"
-            size="lg"
-            className="w-full h-14 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-lg shadow-xl shadow-slate-900/20 hover:shadow-2xl hover:shadow-slate-900/30 transition-all hover:-translate-y-0.5 active:translate-y-0 active:shadow-md"
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mb-8 overflow-hidden"
           >
-            Publish New Train
-          </Button>
-        </form>
-
-        <div className="mt-12 opacity-50 hover:opacity-100 transition-opacity">
-          <Card className="border border-slate-200 bg-slate-50/50 shadow-none">
-            <div className="px-6 py-3 border-b border-slate-200 flex items-center justify-between">
-              <h2 className="text-sm font-bold text-slate-600 uppercase tracking-wider">Dev Preview</h2>
+            <div className={cn(
+              "p-6 rounded-2xl flex items-start gap-4",
+              notification.type === "success" ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-500" : "bg-rose-500/10 border border-rose-500/20 text-rose-500"
+            )}>
+              <Info className="size-6 shrink-0" />
+              <div>
+                <h4 className="font-black uppercase tracking-widest text-xs mb-1">{notification.title}</h4>
+                <p className="text-sm font-medium opacity-80">{notification.message}</p>
+              </div>
             </div>
-            <CardContent className="p-0">
-              <pre className="text-[11px] text-slate-500 p-6 overflow-auto max-h-60 rounded-b-xl">
-                {JSON.stringify(train, null, 2)}
-              </pre>
-            </CardContent>
-          </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Identity & Route */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <GlassCard className="p-8 border-white/5 bg-white/5">
+            <FormSectionHeader icon={Ticket} title="Vessel Identity" desc="Primary identifiers" />
+            <div className="grid grid-cols-1 gap-6">
+              <InputField label="Train Number" name="train_number" value={train.train_number} onChange={handleChange} icon={Zap} placeholder="e.g. 12045" />
+              <InputField label="Vessel Name" name="train_name" value={train.train_name} onChange={handleChange} icon={Train} placeholder="e.g. Hyperion Express" />
+            </div>
+          </GlassCard>
+
+          <GlassCard className="p-8 border-white/5 bg-white/5">
+            <FormSectionHeader icon={Map} title="Route Geometry" desc="Spatial nodes" color="text-indigo-500" />
+            <div className="flex flex-col gap-6">
+              <InputField label="Origin Station" name="from_station" value={train.from_station} onChange={handleChange} icon={MapPin} placeholder="Search station..." />
+              <div className="flex justify-center -my-2 relative z-10">
+                 <div className="size-8 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center">
+                    <ChevronRight className="size-4 text-slate-500 rotate-90 lg:rotate-0" />
+                 </div>
+              </div>
+              <InputField label="Destination Station" name="to_station" value={train.to_station} onChange={handleChange} icon={MapPin} placeholder="Search station..." />
+            </div>
+          </GlassCard>
         </div>
-      </div>
+
+        {/* Schedule */}
+        <GlassCard className="p-8 border-white/5 bg-white/5">
+          <FormSectionHeader icon={CalendarIcon} title="Temporal Coordinates" desc="Departure & Arrival nodes" color="text-emerald-500" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <DatePickerField label="Departure Date" name="departure_date" value={train.departure_date} onChange={handleDateChange} />
+            <TimePickerField label="Departure Time" name="departure_time" value={train.departure_time} onChange={handleChange} required />
+            <DatePickerField label="Arrival Date" name="arrival_date" value={train.arrival_date} onChange={handleDateChange} />
+            <TimePickerField label="Arrival Time" name="arrival_time" value={train.arrival_time} onChange={handleChange} required />
+          </div>
+          <div className="mt-8 max-w-xs">
+            <InputField label="Journey Duration (Min)" name="duration" value={train.duration} onChange={handleChange} icon={Timer} placeholder="e.g. 330" type="number" />
+          </div>
+        </GlassCard>
+
+        {/* Allocation Window */}
+        <GlassCard className={cn(
+          "p-8 border-white/5 bg-white/5 transition-all duration-500",
+          train.takkal && "border-orange-500/20 bg-orange-500/5 shadow-[0_0_50px_rgba(249,115,22,0.1)]"
+        )}>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+            <FormSectionHeader icon={AlertCircle} title="Allocation Engine" desc="Lottery window configuration" color="text-orange-500" />
+            <div className="flex items-center gap-4 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all cursor-pointer">
+              <Checkbox 
+                id="takkal" 
+                checked={train.takkal} 
+                onCheckedChange={(c) => setTrain(p => ({ ...p, takkal: !!c }))}
+                className="size-5 border-white/20 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+              />
+              <Label htmlFor="takkal" className="text-xs font-black uppercase tracking-widest text-white cursor-pointer select-none">Activate Priority Quota</Label>
+            </div>
+          </div>
+          
+          <AnimatePresence>
+            {train.takkal && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-6 border-t border-white/5"
+              >
+                <DatePickerField label="Opening Date" name="opening_date" value={train.opening_date} onChange={handleDateChange} />
+                <TimePickerField label="Opening Time" name="opening_time" value={train.opening_time} onChange={handleChange} />
+                <DatePickerField label="Closing Date" name="closing_date" value={train.closing_date} onChange={handleDateChange} />
+                <TimePickerField label="Closing Time" name="closing_time" value={train.closing_time} onChange={handleChange} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </GlassCard>
+
+        {/* Configurations */}
+        <GlassCard className="p-8 border-white/5 bg-white/5">
+          <FormSectionHeader icon={IndianRupee} title="Class Matrix" desc="Inventory & Pricing" color="text-slate-400" />
+          <div className="space-y-6">
+            {Object.entries(train.classes).map(([key, info]) => (
+              <div key={key} className="grid grid-cols-1 md:grid-cols-12 items-center gap-6 p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
+                <div className="md:col-span-4 flex items-center gap-4">
+                  <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center font-black text-xs text-white">
+                    {key === 'economy' ? 'EC' : key === 'business' ? 'BS' : 'FC'}
+                  </div>
+                  <span className="font-black text-white uppercase tracking-widest">{key}</span>
+                </div>
+                <div className="md:col-span-4">
+                   <InputField label="Capacity" name={`${key}-seats`} value={info.seats} onChange={(e) => handleClassField(key, "seats", e.target.value)} placeholder="0" type="number" />
+                </div>
+                <div className="md:col-span-4">
+                   <InputField label="Unit Fare (₹)" name={`${key}-fare`} value={info.fare} onChange={(e) => handleClassField(key, "fare", e.target.value)} placeholder="0" type="number" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+
+        <PremiumButton
+          type="submit"
+          className="w-full py-6 text-sm font-black uppercase tracking-widest shadow-[0_0_30px_rgba(59,130,246,0.3)]"
+        >
+          <Zap className="size-5" />
+          Synchronize Route to Mainframe
+        </PremiumButton>
+      </form>
     </div>
   );
 }
-
