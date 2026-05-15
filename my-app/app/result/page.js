@@ -71,8 +71,8 @@ export default function ResultPage() {
         <div className="relative min-h-screen py-12 px-4">
             {/* Background Ambience */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-1/4 left-1/4 size-[600px] rounded-full bg-indigo-600/5 blur-[120px]" />
-                <div className="absolute bottom-1/4 right-1/4 size-[600px] rounded-full bg-orange-600/5 blur-[120px]" />
+                <div className="absolute top-1/4 left-1/4 size-[600px] rounded-full bg-primary/5 blur-[120px]" />
+                <div className="absolute bottom-1/4 right-1/4 size-[600px] rounded-full bg-accent/5 blur-[120px]" />
             </div>
 
             <div className="relative z-10 app-shell max-w-5xl">
@@ -83,15 +83,15 @@ export default function ResultPage() {
                         animate={{ opacity: 1, x: 0 }}
                     >
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="flex size-12 items-center justify-center rounded-2xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                            <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary border border-primary/20 shadow-sm">
                                 <Cpu className="size-6" />
                             </div>
                             <div>
-                                <h1 className="text-3xl font-black text-white tracking-tight">Lottery Engine</h1>
-                                <p className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-400/80">Command & Control</p>
+                                <h1 className="text-3xl font-black text-foreground tracking-tight">Lottery Engine</h1>
+                                <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Command & Control</p>
                             </div>
                         </div>
-                        <p className="text-slate-400 max-w-md">
+                        <p className="text-muted-foreground max-w-md font-medium">
                             Execute seat allocation protocols for completed booking windows. Verified by cryptographic fairness logic.
                         </p>
                     </motion.div>
@@ -101,9 +101,9 @@ export default function ResultPage() {
                         animate={{ opacity: 1, scale: 1 }}
                         className="flex gap-4"
                     >
-                        <div className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Queue Depth</p>
-                            <p className="text-2xl font-black text-white">{trains.length}</p>
+                        <div className="px-6 py-3 rounded-2xl bg-secondary border border-border backdrop-blur-md shadow-sm">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Queue Depth</p>
+                            <p className="text-2xl font-black text-foreground">{trains.length}</p>
                         </div>
                     </motion.div>
                 </div>
@@ -129,8 +129,8 @@ export default function ResultPage() {
                                     className="group"
                                 >
                                     <div className="mb-2 ml-4 flex items-center gap-2">
-                                        <div className="size-2 rounded-full bg-orange-500 animate-pulse" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                        <div className="size-2 rounded-full bg-accent animate-pulse" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                             Ready for Publication
                                         </span>
                                     </div>
@@ -153,20 +153,20 @@ export default function ResultPage() {
                         whileInView={{ opacity: 1 }}
                         className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6"
                     >
-                        <GlassCard className="p-6 border-white/5">
+                        <GlassCard className="p-6">
                             <Zap className="size-5 text-yellow-500 mb-4" />
-                            <h4 className="text-sm font-bold text-white mb-2">High Efficiency</h4>
-                            <p className="text-xs text-slate-400">Allocations are processed across distributed compute nodes in under 500ms.</p>
+                            <h4 className="text-sm font-bold text-foreground mb-2">High Efficiency</h4>
+                            <p className="text-xs text-muted-foreground font-medium">Allocations are processed across distributed compute nodes in under 500ms.</p>
                         </GlassCard>
-                        <GlassCard className="p-6 border-white/5">
-                            <ShieldAlert className="size-5 text-indigo-500 mb-4" />
-                            <h4 className="text-sm font-bold text-white mb-2">Immutable Logs</h4>
-                            <p className="text-xs text-slate-400">Every draw result is cryptographically signed and published to the public log.</p>
+                        <GlassCard className="p-6">
+                            <ShieldAlert className="size-5 text-primary mb-4" />
+                            <h4 className="text-sm font-bold text-foreground mb-2">Immutable Logs</h4>
+                            <p className="text-xs text-muted-foreground font-medium">Every draw result is cryptographically signed and published to the public log.</p>
                         </GlassCard>
-                        <GlassCard className="p-6 border-white/5">
+                        <GlassCard className="p-6">
                             <LayoutDashboard className="size-5 text-emerald-500 mb-4" />
-                            <h4 className="text-sm font-bold text-white mb-2">Transparency Audit</h4>
-                            <p className="text-xs text-slate-400">Auditors can verify seat distribution against priority scores in real-time.</p>
+                            <h4 className="text-sm font-bold text-foreground mb-2">Transparency Audit</h4>
+                            <p className="text-xs text-muted-foreground font-medium">Auditors can verify seat distribution against priority scores in real-time.</p>
                         </GlassCard>
                     </motion.div>
                 )}

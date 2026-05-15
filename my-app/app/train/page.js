@@ -69,8 +69,8 @@ function SearchTrainInner() {
         <div className="relative min-h-screen py-12">
             {/* Background Ambience */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-0 left-1/4 size-[600px] rounded-full bg-blue-600/5 blur-[120px]" />
-                <div className="absolute bottom-0 right-1/4 size-[600px] rounded-full bg-orange-600/5 blur-[120px]" />
+                <div className="absolute top-0 left-1/4 size-[600px] rounded-full bg-primary/5 blur-[120px]" />
+                <div className="absolute bottom-0 right-1/4 size-[600px] rounded-full bg-accent/5 blur-[120px]" />
             </div>
 
             <div className="relative z-10 max-w-5xl mx-auto px-4">
@@ -80,7 +80,7 @@ function SearchTrainInner() {
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4"
+                            className="inline-flex items-center gap-2 rounded-full bg-secondary border border-border px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-4"
                         >
                             Journey Intelligence
                         </motion.div>
@@ -88,7 +88,7 @@ function SearchTrainInner() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="text-4xl font-extrabold text-white"
+                            className="text-4xl font-extrabold text-foreground tracking-tight"
                         >
                             Available Routes
                         </motion.h1>
@@ -96,20 +96,20 @@ function SearchTrainInner() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="mt-4 flex items-center gap-4 text-slate-400"
+                            className="mt-4 flex flex-wrap items-center gap-4 text-muted-foreground"
                         >
-                            <div className="flex items-center gap-2">
-                                <MapPin className="size-4 text-orange-500" />
-                                <span className="font-bold text-slate-200">{from}</span>
+                            <div className="flex items-center gap-2 bg-secondary/50 px-3 py-1.5 rounded-xl border border-border shadow-sm">
+                                <MapPin className="size-4 text-primary" />
+                                <span className="font-bold text-foreground text-sm">{from}</span>
                             </div>
-                            <ArrowRight className="size-4 text-slate-600" />
-                            <div className="flex items-center gap-2">
-                                <MapPin className="size-4 text-orange-500" />
-                                <span className="font-bold text-slate-200">{to}</span>
+                            <ArrowRight className="size-4 text-muted-foreground/30" />
+                            <div className="flex items-center gap-2 bg-secondary/50 px-3 py-1.5 rounded-xl border border-border shadow-sm">
+                                <MapPin className="size-4 text-primary" />
+                                <span className="font-bold text-foreground text-sm">{to}</span>
                             </div>
-                            <div className="hidden sm:flex items-center gap-2 ml-4 pl-4 border-l border-white/10">
-                                <CalendarIcon className="size-4 text-slate-500" />
-                                <span>{date}</span>
+                            <div className="hidden sm:flex items-center gap-2 ml-4 pl-4 border-l border-border">
+                                <CalendarIcon className="size-4 text-muted-foreground" />
+                                <span className="text-sm font-medium">{date}</span>
                             </div>
                         </motion.div>
                     </div>
@@ -119,13 +119,13 @@ function SearchTrainInner() {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.3 }}
                     >
-                        <GlassCard className="py-3 px-5 border-white/5 bg-white/5 flex items-center gap-3">
-                            <div className="size-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-500">
+                        <GlassCard className="py-3 px-5 border-border bg-secondary/30 flex items-center gap-3 shadow-sm">
+                            <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                                 <Info className="size-4" />
                             </div>
                             <div className="text-left">
-                                <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Total Journeys</p>
-                                <p className="text-lg font-bold text-white">{trainResults.length}</p>
+                                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Total Journeys</p>
+                                <p className="text-lg font-bold text-foreground">{trainResults.length}</p>
                             </div>
                         </GlassCard>
                     </motion.div>
@@ -135,7 +135,7 @@ function SearchTrainInner() {
                     {loading ? (
                         <div className="flex flex-col gap-6">
                             {[1, 2, 3].map(i => (
-                                <GlassCard key={i} className="h-48 animate-pulse bg-white/5 border-white/5" />
+                                <GlassCard key={i} className="h-48 animate-pulse bg-secondary/30 border-border" />
                             ))}
                         </div>
                     ) : (

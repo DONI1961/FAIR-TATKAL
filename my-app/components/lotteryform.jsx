@@ -109,19 +109,19 @@ const LotteryForm = ({ train, second, fn }) => {
         className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12"
       >
         <div className="text-center md:text-left">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">
+          <div className="inline-flex items-center gap-2 rounded-full bg-secondary border border-border px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4 shadow-sm">
             Reservation Terminal
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter">
-            Smart Allocation <span className="text-orange-500">System</span>
+          <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tighter">
+            Smart Allocation <span className="text-primary">System</span>
           </h1>
-          <p className="mt-4 text-slate-400 font-medium">
-            Join the fair lottery for <span className="text-white font-bold">{trainDetails.train_name}</span> (#{trainDetails.train_number})
+          <p className="mt-4 text-muted-foreground font-medium">
+            Join the fair lottery for <span className="text-foreground font-bold">{trainDetails.train_name}</span> (#{trainDetails.train_number})
           </p>
         </div>
 
-        <GlassCard className="py-6 px-8 border-orange-500/20 bg-orange-500/5 text-center min-w-[240px]">
-          <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-orange-500 mb-3">
+        <GlassCard className="py-6 px-8 border-primary/20 bg-primary/5 text-center min-w-[240px] shadow-sm">
+          <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary mb-3">
             <Clock className="size-3 animate-pulse" />
             Window Closing
           </div>
@@ -137,23 +137,23 @@ const LotteryForm = ({ train, second, fn }) => {
             label={`Allocation Odds: ${formData.travelClass.toUpperCase()}`}
           />
           
-          <GlassCard className="p-6 border-white/5 bg-white/5">
-            <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
-              <Info className="size-4 text-blue-500" />
+          <GlassCard className="p-6">
+            <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-6 flex items-center gap-2">
+              <Info className="size-4 text-primary" />
               Live Insights
             </h4>
             <div className="space-y-4">
               {[
                 { icon: ShieldCheck, label: "Encrypted Entry", desc: "Your bid is securely stored and tamper-proof.", color: "text-emerald-500" },
-                { icon: Zap, label: "Real-time Demand", desc: "Currently 42 active bidders for this route.", color: "text-blue-500" },
+                { icon: Zap, label: "Real-time Demand", desc: "Currently 42 active bidders for this route.", color: "text-primary" },
               ].map((item, i) => (
-                <div key={i} className="flex gap-4 p-3 rounded-xl bg-white/5 border border-white/5">
-                  <div className={`shrink-0 size-8 rounded-lg bg-white/5 flex items-center justify-center ${item.color}`}>
+                <div key={i} className="flex gap-4 p-3 rounded-xl bg-secondary/50 border border-border/50">
+                  <div className={`shrink-0 size-8 rounded-lg bg-secondary flex items-center justify-center ${item.color}`}>
                     <item.icon className="size-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-white mb-1">{item.label}</p>
-                    <p className="text-[11px] text-slate-500 leading-relaxed font-medium">{item.desc}</p>
+                    <p className="text-xs font-bold text-foreground mb-1">{item.label}</p>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed font-medium">{item.desc}</p>
                   </div>
                 </div>
               ))}
@@ -163,11 +163,11 @@ const LotteryForm = ({ train, second, fn }) => {
 
         {/* Entry Form */}
         <div className="lg:col-span-7 order-1 lg:order-2">
-          <GlassCard className="p-8 md:p-10 border-white/10 bg-white/5 backdrop-blur-3xl shadow-2xl overflow-visible">
+          <GlassCard className="p-8 md:p-10 border-border bg-card backdrop-blur-3xl shadow-2xl overflow-visible">
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-4">
-                <label className="text-xs font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                  <Ticket className="size-4 text-orange-500" />
+                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <Ticket className="size-4 text-primary" />
                   Select Travel Tier
                 </label>
                 
@@ -175,47 +175,47 @@ const LotteryForm = ({ train, second, fn }) => {
                   value={formData.travelClass}
                   onValueChange={(value) => setFormData({ ...formData, travelClass: value })}
                 >
-                  <SelectTrigger className="w-full h-20 rounded-2xl border-white/10 bg-white/5 px-6 text-left text-lg font-bold text-white transition-all focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10 hover:bg-white/10">
+                  <SelectTrigger className="w-full h-20 rounded-2xl border-border bg-secondary/50 px-6 text-left text-lg font-bold text-foreground transition-all focus:border-primary/50 focus:ring-4 focus:ring-primary/10 hover:bg-secondary">
                     <SelectValue placeholder="Choose your class" />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-900/95 border-white/10 backdrop-blur-3xl p-1 rounded-2xl z-50">
-                    <SelectItem value="economy" className="rounded-xl py-4 px-6 text-white hover:bg-white/10 focus:bg-white/10 focus:text-orange-400 cursor-pointer transition-all">
+                  <SelectContent className="bg-popover border-border backdrop-blur-3xl p-1 rounded-2xl z-50">
+                    <SelectItem value="economy" className="rounded-xl py-4 px-6 text-foreground hover:bg-secondary focus:bg-secondary focus:text-primary cursor-pointer transition-all">
                       <div className="flex justify-between w-full min-w-[200px]">
-                        <span className="font-bold">ECONOMY</span>
-                        <span className="text-slate-500">₹{trainDetails.fare[0]}</span>
+                        <span className="font-bold uppercase">Economy</span>
+                        <span className="text-muted-foreground">₹{trainDetails.fare[0]}</span>
                       </div>
                     </SelectItem>
-                    <SelectItem value="business" className="rounded-xl py-4 px-6 text-white hover:bg-white/10 focus:bg-white/10 focus:text-orange-400 cursor-pointer transition-all">
+                    <SelectItem value="business" className="rounded-xl py-4 px-6 text-foreground hover:bg-secondary focus:bg-secondary focus:text-primary cursor-pointer transition-all">
                       <div className="flex justify-between w-full min-w-[200px]">
-                        <span className="font-bold">BUSINESS</span>
-                        <span className="text-slate-500">₹{trainDetails.fare[1]}</span>
+                        <span className="font-bold uppercase">Business</span>
+                        <span className="text-muted-foreground">₹{trainDetails.fare[1]}</span>
                       </div>
                     </SelectItem>
-                    <SelectItem value="first" className="rounded-xl py-4 px-6 text-white hover:bg-white/10 focus:bg-white/10 focus:text-orange-400 cursor-pointer transition-all">
+                    <SelectItem value="first" className="rounded-xl py-4 px-6 text-foreground hover:bg-secondary focus:bg-secondary focus:text-primary cursor-pointer transition-all">
                       <div className="flex justify-between w-full min-w-[200px]">
-                        <span className="font-bold">FIRST CLASS</span>
-                        <span className="text-slate-500">₹{trainDetails.fare[2]}</span>
+                        <span className="font-bold uppercase">First Class</span>
+                        <span className="text-muted-foreground">₹{trainDetails.fare[2]}</span>
                       </div>
                     </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="p-6 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between">
+              <div className="p-6 rounded-2xl bg-secondary/50 border border-border flex items-center justify-between shadow-sm">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Current Tier Availability</p>
-                  <p className="text-xl font-black text-white">{classData[formData.travelClass].seats} SEATS <span className="text-emerald-500 text-xs ml-1 font-bold uppercase">REMAINING</span></p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Current Tier Availability</p>
+                  <p className="text-xl font-black text-foreground">{classData[formData.travelClass].seats} SEATS <span className="text-emerald-500 text-xs ml-1 font-bold uppercase">REMAINING</span></p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Base Fare</p>
-                  <p className="text-2xl font-black text-orange-500">₹{classData[formData.travelClass].fare}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Base Fare</p>
+                  <p className="text-2xl font-black text-primary">₹{classData[formData.travelClass].fare}</p>
                 </div>
               </div>
 
               <PremiumButton
                 type="submit"
                 disabled={btLoading}
-                className="w-full py-6 text-sm font-black uppercase tracking-widest shadow-[0_0_30px_rgba(249,115,22,0.3)]"
+                className="w-full py-6 text-sm font-black uppercase tracking-widest shadow-lg"
               >
                 {btLoading ? (
                   <div className="flex items-center gap-3">
@@ -230,7 +230,7 @@ const LotteryForm = ({ train, second, fn }) => {
                 )}
               </PremiumButton>
               
-              <p className="text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+              <p className="text-center text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                 By entering, you agree to our fair allocation policy
               </p>
             </form>

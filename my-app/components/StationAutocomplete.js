@@ -93,7 +93,7 @@ export default function StationAutocomplete({ id, name, value, onChange, placeho
   return (
     <div ref={containerRef} className="relative w-full">
       {label && (
-        <label htmlFor={id} className="mb-2 block text-xs font-bold uppercase tracking-widest text-slate-500">
+        <label htmlFor={id} className="mb-2 block text-xs font-bold uppercase tracking-widest text-muted-foreground">
           {label}
         </label>
       )}
@@ -112,7 +112,7 @@ export default function StationAutocomplete({ id, name, value, onChange, placeho
         autoComplete="off"
         required
         className={cn(
-          "w-full h-16 rounded-2xl border border-white/5 bg-white/5 px-4 text-white outline-none transition-all focus:bg-white/10 focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10 placeholder:text-slate-500",
+          "w-full h-16 rounded-2xl border border-border bg-secondary/30 px-4 text-foreground outline-none transition-all focus:bg-secondary/50 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 placeholder:text-muted-foreground/50",
           className
         )}
       />
@@ -120,7 +120,7 @@ export default function StationAutocomplete({ id, name, value, onChange, placeho
       {open && suggestions.length > 0 && (
         <ul
           role="listbox"
-          className="absolute z-50 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-900/90 p-1 backdrop-blur-2xl shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200"
+          className="absolute z-50 mt-2 w-full overflow-hidden rounded-2xl border border-border bg-popover/95 p-1 backdrop-blur-2xl shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200"
         >
           {suggestions.map((station, idx) => {
             const matchStart = station.toLowerCase().indexOf(query.toLowerCase());
@@ -138,19 +138,19 @@ export default function StationAutocomplete({ id, name, value, onChange, placeho
                 className={cn(
                   "flex cursor-pointer items-center gap-3 rounded-xl px-4 py-3 text-sm transition-all",
                   highlighted === idx
-                    ? "bg-white/10 text-orange-500"
-                    : "text-slate-300 hover:bg-white/5 hover:text-white"
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                 )}
               >
                 <div className={cn(
                   "flex size-8 items-center justify-center rounded-lg transition-colors",
-                  highlighted === idx ? "bg-orange-500/20 text-orange-500" : "bg-white/5 text-slate-500"
+                  highlighted === idx ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"
                 )}>
                   <Train className="size-4" />
                 </div>
                 <span>
                   {before}
-                  <span className="font-bold text-orange-500">{match}</span>
+                  <span className="font-bold text-primary">{match}</span>
                   {after}
                 </span>
               </li>

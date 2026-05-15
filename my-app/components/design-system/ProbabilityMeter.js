@@ -13,21 +13,21 @@ export const ProbabilityMeter = ({ value, label = "Winning Chance" }) => {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-white/70">{label}</span>
-        <span className="text-sm font-bold text-white">{percentage}%</span>
+        <span className="text-sm font-black uppercase tracking-widest text-muted-foreground">{label}</span>
+        <span className="text-sm font-black text-foreground">{percentage}%</span>
       </div>
-      <div className="relative h-3 w-full overflow-hidden rounded-full bg-white/10 backdrop-blur-sm">
+      <div className="relative h-3 w-full overflow-hidden rounded-full bg-secondary border border-border shadow-inner">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
           transition={{ duration: 1.5, ease: "easeOut" }}
-          className={`h-full bg-gradient-to-r ${getColor(percentage)} shadow-[0_0_15px_rgba(249,115,22,0.3)]`}
+          className={`h-full bg-gradient-to-r ${getColor(percentage)} shadow-lg shadow-primary/20`}
         />
         {/* Glow effect */}
         <motion.div
-          animate={{ opacity: [0.4, 0.8, 0.4] }}
+          animate={{ opacity: [0.1, 0.3, 0.1] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="absolute inset-0 bg-white/20 blur-sm"
+          className="absolute inset-0 bg-white/20 blur-sm pointer-events-none"
           style={{ width: `${percentage}%` }}
         />
       </div>

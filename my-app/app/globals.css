@@ -49,48 +49,48 @@
 }
 
 :root {
-  /* Premium Light Mode */
-  --background: #F5F9FF;
-  --foreground: #111827;
-  --card: rgba(255, 255, 255, 0.8);
-  --card-foreground: #111827;
+  /* Premium Light Mode - Enhanced Contrast */
+  --background: #F8FAFF;
+  --foreground: #0F172A;
+  --card: rgba(255, 255, 255, 0.9);
+  --card-foreground: #0F172A;
   --popover: #FFFFFF;
-  --popover-foreground: #111827;
-  --primary: #0B4DA1;
+  --popover-foreground: #0F172A;
+  --primary: #0056D2;
   --primary-foreground: #FFFFFF;
-  --secondary: #F3F4F6;
-  --secondary-foreground: #111827;
-  --muted: #F3F4F6;
-  --muted-foreground: #6B7280;
-  --accent: #FF7A00;
+  --secondary: #E2E8F0;
+  --secondary-foreground: #0F172A;
+  --muted: #F1F5F9;
+  --muted-foreground: #475569;
+  --accent: #E11D48;
   --accent-foreground: #FFFFFF;
-  --destructive: #EF4444;
-  --border: rgba(0, 77, 161, 0.1);
-  --input: rgba(0, 77, 161, 0.05);
-  --ring: rgba(11, 77, 161, 0.4);
+  --destructive: #DC2626;
+  --border: #CBD5E1;
+  --input: #FFFFFF;
+  --ring: rgba(0, 86, 210, 0.4);
   --radius: 1.5rem;
 }
 
 .dark {
-  /* Cinematic Dark Mode */
-  --background: #050B18;
+  /* Cinematic Dark Mode - Refined */
+  --background: #020617;
   --foreground: #F8FAFC;
-  --card: rgba(15, 23, 42, 0.7);
+  --card: rgba(15, 23, 42, 0.8);
   --card-foreground: #F8FAFC;
   --popover: #0F172A;
   --popover-foreground: #F8FAFC;
-  --primary: #2563EB;
+  --primary: #3B82F6;
   --primary-foreground: #FFFFFF;
   --secondary: #1E293B;
   --secondary-foreground: #F8FAFC;
   --muted: #1E293B;
   --muted-foreground: #94A3B8;
-  --accent: #FF8C42;
+  --accent: #F97316;
   --accent-foreground: #FFFFFF;
-  --destructive: #991B1B;
+  --destructive: #B91C1C;
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.05);
-  --ring: rgba(37, 99, 235, 0.4);
+  --ring: rgba(59, 130, 246, 0.4);
 }
 
 @layer base {
@@ -104,15 +104,15 @@
   }
   
   :root {
-    --bg-gradient: radial-gradient(circle at 0% 0%, rgba(11, 77, 161, 0.03) 0%, transparent 50%),
-                   radial-gradient(circle at 100% 0%, rgba(255, 122, 0, 0.03) 0%, transparent 40%),
-                   #F5F9FF;
+    --bg-gradient: radial-gradient(circle at 0% 0%, rgba(0, 86, 210, 0.05) 0%, transparent 50%),
+                   radial-gradient(circle at 100% 0%, rgba(225, 29, 72, 0.05) 0%, transparent 40%),
+                   #F8FAFF;
   }
 
   .dark {
-    --bg-gradient: radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
-                   radial-gradient(circle at 100% 0%, rgba(255, 140, 66, 0.08) 0%, transparent 40%),
-                   radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1) 0%, rgba(5, 11, 24, 1) 100%);
+    --bg-gradient: radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                   radial-gradient(circle at 100% 0%, rgba(249, 115, 22, 0.08) 0%, transparent 40%),
+                   radial-gradient(circle at 50% 50%, #0F172A 0%, #020617 100%);
   }
 
   html {

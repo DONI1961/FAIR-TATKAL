@@ -53,25 +53,25 @@ export default function MyTicket() {
         className="flex flex-col md:flex-row items-center justify-between gap-8 mb-16"
       >
         <div className="text-center md:text-left">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">
+          <div className="inline-flex items-center gap-2 rounded-full bg-secondary border border-border px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">
             User Terminal
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter">
-            Travel <span className="text-orange-500">Vault</span>
+          <h1 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter">
+            Travel <span className="text-primary">Vault</span>
           </h1>
-          <p className="mt-4 text-slate-400 font-medium max-w-md">
+          <p className="mt-4 text-muted-foreground font-medium max-w-md">
             Review every allocation result, payment status, and upcoming journey in your secure railway ecosystem.
           </p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <GlassCard className="py-6 px-8 text-center min-w-[160px] border-white/5 bg-white/5">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Total Entries</p>
-            <p className="text-3xl font-black text-white">{trains.length}</p>
+          <GlassCard className="py-6 px-8 text-center min-w-[160px] border-border shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Total Entries</p>
+            <p className="text-3xl font-black text-foreground">{trains.length}</p>
           </GlassCard>
-          <GlassCard className="py-6 px-8 text-center min-w-[160px] border-orange-500/10 bg-orange-500/5">
-            <p className="text-[10px] font-black uppercase tracking-widest text-orange-500 mb-1">Confirmed</p>
-            <p className="text-3xl font-black text-white">
+          <GlassCard className="py-6 px-8 text-center min-w-[160px] border-primary/10 bg-primary/5 shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">Confirmed</p>
+            <p className="text-3xl font-black text-foreground">
               {bookings.filter(b => b.status === 'confirmed').length}
             </p>
           </GlassCard>
@@ -89,7 +89,7 @@ export default function MyTicket() {
               exit={{ opacity: 0, scale: 0.9 }}
               className="py-20"
             >
-              <NotFound error={false} message="Your vault is currently empty. Start your first journey below." />
+              <NotFound error={false} title="Vault Empty" message="Your vault is currently empty. Start your first journey below." />
             </motion.div>
           ) : (
             <motion.div 
@@ -99,15 +99,15 @@ export default function MyTicket() {
               className="space-y-8"
             >
               <div className="flex items-center justify-between px-4">
-                 <h2 className="text-xs font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                 <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                    <Inbox className="size-4" />
                    Recent Submissions
                  </h2>
                  <div className="flex items-center gap-4">
-                    <button className="text-slate-500 hover:text-white transition-colors">
+                    <button className="text-muted-foreground hover:text-foreground transition-colors">
                       <Search className="size-4" />
                     </button>
-                    <button className="text-slate-500 hover:text-white transition-colors">
+                    <button className="text-muted-foreground hover:text-foreground transition-colors">
                       <Filter className="size-4" />
                     </button>
                  </div>
@@ -132,7 +132,7 @@ export default function MyTicket() {
 
       {/* Background Ambience */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 pointer-events-none opacity-20">
-        <div className="w-[800px] h-[800px] bg-blue-600/20 rounded-full blur-[120px]" />
+        <div className="w-[800px] h-[800px] bg-primary/20 rounded-full blur-[120px]" />
       </div>
     </div>
   )

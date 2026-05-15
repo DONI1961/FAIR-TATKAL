@@ -36,38 +36,38 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-const FormSectionHeader = ({ icon: Icon, title, desc, color = "text-blue-500" }) => (
+const FormSectionHeader = ({ icon: Icon, title, desc, color = "text-primary" }) => (
   <div className="flex items-center gap-4 mb-8">
-    <div className={cn("size-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center", color)}>
+    <div className={cn("size-12 rounded-2xl bg-secondary border border-border flex items-center justify-center shadow-sm", color)}>
       <Icon className="size-6" />
     </div>
     <div>
-      <h3 className="text-xl font-black text-white tracking-tight">{title}</h3>
-      <p className="text-xs font-medium text-slate-500 uppercase tracking-widest">{desc}</p>
+      <h3 className="text-xl font-black text-foreground tracking-tight">{title}</h3>
+      <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest">{desc}</p>
     </div>
   </div>
 );
 
 const DatePickerField = ({ label, name, value, onChange }) => (
   <div className="space-y-2">
-    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</Label>
+    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{label}</Label>
     <Popover>
       <PopoverTrigger asChild>
-        <button type="button" className="w-full h-14 rounded-2xl bg-white/5 border border-white/10 px-4 flex items-center gap-3 text-white font-bold hover:bg-white/10 transition-all text-left">
-          <CalendarIcon className="size-4 text-blue-500" />
+        <button type="button" className="w-full h-14 rounded-2xl bg-input border border-border px-4 flex items-center gap-3 text-foreground font-bold hover:bg-secondary/50 transition-all text-left shadow-sm">
+          <CalendarIcon className="size-4 text-primary" />
           <span className="text-sm">
             {value ? format(new Date(value), "PPP") : "Select Date"}
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 rounded-2xl overflow-hidden border-white/10 bg-slate-900 backdrop-blur-3xl" align="start">
+      <PopoverContent className="w-auto p-0 rounded-2xl overflow-hidden border-border bg-popover shadow-2xl" align="start">
         <Calendar
           mode="single"
           selected={value ? new Date(value) : undefined}
           disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
           onSelect={(date) => onChange(name, date)}
           initialFocus
-          className="bg-transparent text-white"
+          className="bg-transparent text-foreground"
         />
       </PopoverContent>
     </Popover>
@@ -76,9 +76,9 @@ const DatePickerField = ({ label, name, value, onChange }) => (
 
 const TimePickerField = ({ label, name, value, onChange, required = false }) => (
   <div className="space-y-2">
-    <Label htmlFor={name} className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</Label>
+    <Label htmlFor={name} className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{label}</Label>
     <div className="relative">
-      <Clock className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-blue-500 pointer-events-none" />
+      <Clock className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-primary pointer-events-none" />
       <Input
         type="time"
         id={name}
@@ -86,7 +86,7 @@ const TimePickerField = ({ label, name, value, onChange, required = false }) => 
         value={value}
         onChange={onChange}
         required={required}
-        className="h-14 w-full pl-12 rounded-2xl border-white/10 bg-white/5 font-bold text-white focus:ring-blue-500/20"
+        className="h-14 w-full pl-12 rounded-2xl border-border bg-input font-bold text-foreground focus:ring-primary/20 shadow-sm"
       />
     </div>
   </div>
@@ -94,9 +94,9 @@ const TimePickerField = ({ label, name, value, onChange, required = false }) => 
 
 const InputField = ({ label, name, value, onChange, placeholder, icon: Icon, type = "text" }) => (
   <div className="space-y-2">
-    <Label htmlFor={name} className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</Label>
+    <Label htmlFor={name} className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{label}</Label>
     <div className="relative">
-      {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-blue-500 pointer-events-none" />}
+      {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-primary pointer-events-none" />}
       <Input
         type={type}
         id={name}
@@ -106,7 +106,7 @@ const InputField = ({ label, name, value, onChange, placeholder, icon: Icon, typ
         placeholder={placeholder}
         required
         className={cn(
-          "h-14 rounded-2xl border-white/10 bg-white/5 font-bold text-white focus:ring-blue-500/20 placeholder:text-slate-600",
+          "h-14 rounded-2xl border-border bg-input font-bold text-foreground focus:ring-primary/20 placeholder:text-muted-foreground/50 shadow-sm",
           Icon ? "pl-12" : "px-6"
         )}
       />
@@ -208,22 +208,22 @@ export default function AddTrain() {
         className="flex flex-col md:flex-row items-center justify-between gap-8 mb-16"
       >
         <div className="text-center md:text-left">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">
+          <div className="inline-flex items-center gap-2 rounded-full bg-secondary border border-border px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">
             Admin Command Center
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter">
-            Fleet <span className="text-orange-500">Expansion</span>
+          <h1 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter">
+            Fleet <span className="text-primary">Expansion</span>
           </h1>
-          <p className="mt-4 text-slate-400 font-medium max-w-md">
+          <p className="mt-4 text-muted-foreground font-medium max-w-md">
             Deploy new routes, configure seating availability, and manage allocation windows with surgical precision.
           </p>
         </div>
 
-        <GlassCard className="py-6 px-8 flex items-center gap-4 border-orange-500/10 bg-orange-500/5">
-           <ShieldAlert className="size-8 text-orange-500" />
+        <GlassCard className="py-6 px-8 flex items-center gap-4 border-primary/10 bg-primary/5">
+           <ShieldAlert className="size-8 text-primary" />
            <div>
-             <p className="text-[10px] font-black uppercase tracking-widest text-orange-500 mb-1">Authorization</p>
-             <p className="text-lg font-black text-white uppercase tracking-tighter">Level 4 Admin</p>
+             <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">Authorization</p>
+             <p className="text-lg font-black text-foreground uppercase tracking-tighter">Level 4 Admin</p>
            </div>
         </GlassCard>
       </motion.div>
@@ -254,7 +254,7 @@ export default function AddTrain() {
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Identity & Route */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <GlassCard className="p-8 border-white/5 bg-white/5">
+          <GlassCard className="p-8">
             <FormSectionHeader icon={Ticket} title="Vessel Identity" desc="Primary identifiers" />
             <div className="grid grid-cols-1 gap-6">
               <InputField label="Train Number" name="train_number" value={train.train_number} onChange={handleChange} icon={Zap} placeholder="e.g. 12045" />
@@ -262,13 +262,13 @@ export default function AddTrain() {
             </div>
           </GlassCard>
 
-          <GlassCard className="p-8 border-white/5 bg-white/5">
+          <GlassCard className="p-8">
             <FormSectionHeader icon={Map} title="Route Geometry" desc="Spatial nodes" color="text-indigo-500" />
             <div className="flex flex-col gap-6">
               <InputField label="Origin Station" name="from_station" value={train.from_station} onChange={handleChange} icon={MapPin} placeholder="Search station..." />
               <div className="flex justify-center -my-2 relative z-10">
-                 <div className="size-8 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center">
-                    <ChevronRight className="size-4 text-slate-500 rotate-90 lg:rotate-0" />
+                 <div className="size-8 rounded-full bg-background border border-border flex items-center justify-center">
+                    <ChevronRight className="size-4 text-muted-foreground rotate-90 lg:rotate-0" />
                  </div>
               </div>
               <InputField label="Destination Station" name="to_station" value={train.to_station} onChange={handleChange} icon={MapPin} placeholder="Search station..." />
@@ -277,7 +277,7 @@ export default function AddTrain() {
         </div>
 
         {/* Schedule */}
-        <GlassCard className="p-8 border-white/5 bg-white/5">
+        <GlassCard className="p-8">
           <FormSectionHeader icon={CalendarIcon} title="Temporal Coordinates" desc="Departure & Arrival nodes" color="text-emerald-500" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <DatePickerField label="Departure Date" name="departure_date" value={train.departure_date} onChange={handleDateChange} />
@@ -292,19 +292,19 @@ export default function AddTrain() {
 
         {/* Allocation Window */}
         <GlassCard className={cn(
-          "p-8 border-white/5 bg-white/5 transition-all duration-500",
-          train.takkal && "border-orange-500/20 bg-orange-500/5 shadow-[0_0_50px_rgba(249,115,22,0.1)]"
+          "p-8 transition-all duration-500",
+          train.takkal && "border-primary/20 bg-primary/5 shadow-[0_0_50px_rgba(0,86,210,0.1)]"
         )}>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
-            <FormSectionHeader icon={AlertCircle} title="Allocation Engine" desc="Lottery window configuration" color="text-orange-500" />
-            <div className="flex items-center gap-4 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all cursor-pointer">
+            <FormSectionHeader icon={AlertCircle} title="Allocation Engine" desc="Lottery window configuration" color="text-primary" />
+            <div className="flex items-center gap-4 px-6 py-3 rounded-2xl bg-secondary/50 border border-border hover:bg-secondary transition-all cursor-pointer">
               <Checkbox 
                 id="takkal" 
                 checked={train.takkal} 
                 onCheckedChange={(c) => setTrain(p => ({ ...p, takkal: !!c }))}
-                className="size-5 border-white/20 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                className="size-5 border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
               />
-              <Label htmlFor="takkal" className="text-xs font-black uppercase tracking-widest text-white cursor-pointer select-none">Activate Priority Quota</Label>
+              <Label htmlFor="takkal" className="text-xs font-black uppercase tracking-widest text-foreground cursor-pointer select-none">Activate Priority Quota</Label>
             </div>
           </div>
           
@@ -314,7 +314,7 @@ export default function AddTrain() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-6 border-t border-white/5"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-6 border-t border-border"
               >
                 <DatePickerField label="Opening Date" name="opening_date" value={train.opening_date} onChange={handleDateChange} />
                 <TimePickerField label="Opening Time" name="opening_time" value={train.opening_time} onChange={handleChange} />
@@ -326,16 +326,16 @@ export default function AddTrain() {
         </GlassCard>
 
         {/* Configurations */}
-        <GlassCard className="p-8 border-white/5 bg-white/5">
-          <FormSectionHeader icon={IndianRupee} title="Class Matrix" desc="Inventory & Pricing" color="text-slate-400" />
+        <GlassCard className="p-8">
+          <FormSectionHeader icon={IndianRupee} title="Class Matrix" desc="Inventory & Pricing" color="text-muted-foreground" />
           <div className="space-y-6">
             {Object.entries(train.classes).map(([key, info]) => (
-              <div key={key} className="grid grid-cols-1 md:grid-cols-12 items-center gap-6 p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
+              <div key={key} className="grid grid-cols-1 md:grid-cols-12 items-center gap-6 p-6 rounded-2xl bg-secondary/30 border border-border hover:bg-secondary/50 transition-all shadow-sm">
                 <div className="md:col-span-4 flex items-center gap-4">
-                  <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center font-black text-xs text-white">
+                  <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center font-black text-xs text-primary">
                     {key === 'economy' ? 'EC' : key === 'business' ? 'BS' : 'FC'}
                   </div>
-                  <span className="font-black text-white uppercase tracking-widest">{key}</span>
+                  <span className="font-black text-foreground uppercase tracking-widest">{key}</span>
                 </div>
                 <div className="md:col-span-4">
                    <InputField label="Capacity" name={`${key}-seats`} value={info.seats} onChange={(e) => handleClassField(key, "seats", e.target.value)} placeholder="0" type="number" />
@@ -350,7 +350,7 @@ export default function AddTrain() {
 
         <PremiumButton
           type="submit"
-          className="w-full py-6 text-sm font-black uppercase tracking-widest shadow-[0_0_30px_rgba(59,130,246,0.3)]"
+          className="w-full py-6 text-sm font-black uppercase tracking-widest shadow-xl"
         >
           <Zap className="size-5" />
           Synchronize Route to Mainframe

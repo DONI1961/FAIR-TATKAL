@@ -2,14 +2,13 @@ import React from 'react'
 
 const login = () => {
   return (
-    
-<div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-md rounded-[2rem] border border-slate-200 bg-white px-8 py-10 shadow-xl shadow-slate-200/40">
-        <div className="mb-6 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md rounded-[2rem] border border-border bg-card px-8 py-10 shadow-xl shadow-foreground/5 backdrop-blur-md">
+        <div className="mb-8 text-center">
+          <p className="text-sm font-black uppercase tracking-[0.3em] text-muted-foreground">
             Welcome back
           </p>
-          <h1 className="mt-4 text-2xl font-semibold text-slate-900">
+          <h1 className="mt-4 text-3xl font-black text-foreground tracking-tighter">
             Sign in to continue
           </h1>
         </div>
@@ -17,9 +16,9 @@ const login = () => {
           <button
             type="button"
             onClick={() => signIn("google")}
-            className="flex items-center justify-center gap-3 rounded-2xl bg-gray-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/10 transition hover:bg-slate-800"
+            className="flex w-full items-center justify-center gap-3 rounded-2xl bg-primary px-5 py-4 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95"
           >
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white">
               <svg viewBox="0 0 24 24" className="h-4 w-4">
                 <path fill="#4285F4" d="M23.64 12.2c0-.78-.07-1.53-.2-2.25H12.2v4.26h6.19c-.27 1.44-1.08 2.66-2.29 3.48v2.9h3.7c2.16-1.99 3.41-4.92 3.41-8.39z"/>
                 <path fill="#34A853" d="M12.2 24c2.97 0 5.47-.98 7.29-2.66l-3.7-2.9c-1.03.69-2.35 1.1-3.59 1.1-2.76 0-5.1-1.86-5.94-4.36H2.47v2.73C4.27 21.95 8.01 24 12.2 24z"/>
